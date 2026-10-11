@@ -70,7 +70,7 @@
 
   .app-header {
     flex-shrink: 0;
-    padding: 12px 16px;
+    padding: 10px 14px;
     background: var(--panel);
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
@@ -78,42 +78,55 @@
   }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; min-width: 0; flex: 1; }
   .brand-logo {
-    width: 34px; height: 34px;
+    width: 32px; height: 32px;
     background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    border-radius: 10px;
+    border-radius: 9px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: white; font-weight: 800;
+    font-size: 13px; color: white; font-weight: 800;
     box-shadow: 0 4px 12px rgba(99,102,241,0.3);
     flex-shrink: 0;
   }
   .brand-text { display: flex; flex-direction: column; min-width: 0; }
-  .brand-sub { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.3px; }
+  .brand-sub { font-size: 10.5px; font-weight: 500; color: var(--muted); letter-spacing: 0.3px; }
   .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
   .icon-btn {
-    width: 42px; height: 42px;
-    border-radius: 12px;
+    width: 40px; height: 40px;
+    border-radius: 11px;
     background: var(--panel-2);
     border: 1px solid var(--border);
     color: var(--text);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+    position: relative;
   }
   .icon-btn:active { transform: scale(0.94); background: var(--panel-3); }
-  .icon-btn svg { width: 20px; height: 20px; }
+  .icon-btn svg { width: 19px; height: 19px; }
 
   .prompt-btn {
-    width: 42px; height: 42px;
-    border-radius: 12px;
+    width: 40px; height: 40px;
+    border-radius: 11px;
     background: linear-gradient(135deg, var(--accent), #8b5cf6);
     border: none; color: white;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-    font-size: 20px;
+    font-size: 19px;
     box-shadow: 0 4px 12px rgba(99,102,241,0.35);
     padding: 0; line-height: 1;
   }
   .prompt-btn:active { transform: scale(0.94); }
+
+  .menu-badge {
+    position: absolute; top: 5px; right: 5px;
+    width: 9px; height: 9px;
+    background: var(--danger); border-radius: 50%;
+    border: 2px solid var(--panel);
+    display: none;
+    box-shadow: 0 0 8px rgba(239,68,68,0.6);
+    animation: pulse 1.4s infinite;
+    z-index: 1;
+  }
+  .menu-badge.show { display: block; }
 
   .app-main { flex: 1; position: relative; overflow: hidden; }
   .tab-panel {
@@ -127,35 +140,137 @@
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  .import-btn {
-    width: 100%; padding: 16px;
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    color: white; border: none; border-radius: var(--radius);
-    font-size: 15px; font-weight: 600; font-family: inherit;
+  /* ============ HOME: EDITOR FULL HEIGHT ============ */
+  #panel-home {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+  #panel-home[hidden] { display: none; }
+
+  #panel-home .code-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    min-height: 0;
+    background: var(--panel);
+  }
+
+  #panel-home .code-header {
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+  #panel-home .code-title {
+    flex: 1 1 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  #panel-home .code-title > span:first-child {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.3px;
+    text-transform: none;
+  }
+  #panel-home .code-tools {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+  #panel-home .mini-btn {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    font-size: 12px;
+    border-radius: 7px;
+  }
+  #panel-home .mini-btn.text-btn {
+    min-width: 42px;
+    font-size: 10.5px;
+    padding: 0 8px;
+    letter-spacing: 0.2px;
+  }
+  #panel-home .mini-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+  #panel-home .font-display {
+    font-size: 10px;
+    min-width: 16px;
+  }
+  #panel-home #codeArea {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    resize: none;
+    border-radius: 0;
+    padding: 12px;
+  }
+
+  .arrow-nav {
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    padding: 8px 10px;
+    background: var(--panel-2);
+    border-top: 1px solid var(--border);
+  }
+  .arrow-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    min-height: 56px;
-    box-shadow: 0 6px 20px rgba(99,102,241,0.35);
-    transition: transform 0.12s;
-    margin-bottom: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: all 0.1s;
+    padding: 0;
+    line-height: 1;
   }
-  .import-btn:active { transform: scale(0.98); }
-  .import-btn svg { width: 20px; height: 20px; }
+  .arrow-btn:active,
+  .arrow-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    transform: scale(0.94);
+  }
 
+  /* ============ FILE INFO ============ */
   .file-info {
-    margin-bottom: 10px; padding: 10px 14px;
+    padding: 8px 12px;
     background: rgba(16,185,129,0.08);
-    border: 1px solid rgba(16,185,129,0.3);
-    border-radius: 10px;
-    font-size: 12px; color: var(--success);
+    border-bottom: 1px solid rgba(16,185,129,0.3);
+    font-size: 11.5px; color: var(--success);
     display: flex; align-items: center; gap: 8px; font-weight: 600;
+    flex-shrink: 0;
   }
-  .file-info svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .file-info svg { width: 14px; height: 14px; flex-shrink: 0; }
   .file-info .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
   .file-info .clear-file {
     background: transparent; border: none; color: var(--success);
-    padding: 4px 8px; font-size: 16px; cursor: pointer;
+    padding: 4px 8px; font-size: 15px; cursor: pointer;
     font-family: inherit; opacity: 0.7; flex-shrink: 0;
   }
   .file-info[hidden] { display: none; }
@@ -185,10 +300,6 @@
   }
   .code-tools { display: flex; align-items: center; gap: 4px; flex-shrink: 0; flex-wrap: wrap; }
 
-  #panel-home .code-header { flex-wrap: wrap; }
-  #panel-home .code-header .code-title { flex: 1 1 100%; }
-  #panel-home .code-header .code-title .save-status { margin-left: auto; }
-  #panel-home .code-header .code-tools { flex: 1 1 100%; justify-content: flex-end; flex-wrap: wrap; }
   .mini-btn {
     background: var(--panel-3); border: 1px solid var(--border);
     color: var(--text); border-radius: 8px;
@@ -200,6 +311,7 @@
   }
   .mini-btn:active { background: var(--accent); color: white; border-color: var(--accent); }
   .mini-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .mini-btn svg { pointer-events: none; }
   @media (max-width: 480px) {
     .mini-btn { min-width: 28px; height: 28px; padding: 0 5px; font-size: 12px; }
     .mini-btn.text-btn { min-width: auto; font-size: 10px; padding: 0 6px; letter-spacing: 0.2px; }
@@ -219,6 +331,7 @@
     background: rgba(16,185,129,0.1);
     border-radius: 8px;
     transition: all 0.2s; flex-shrink: 0;
+    margin-left: auto;
   }
   .save-status .dot {
     width: 6px; height: 6px; border-radius: 50%;
@@ -247,7 +360,6 @@
   }
 
   .actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .actions-row.three { grid-template-columns: 1fr 1fr 1fr; }
 
   .btn {
     padding: 14px 12px;
@@ -270,20 +382,6 @@
   .btn.small svg { width: 15px; height: 15px; }
   .btn.compact { font-size: 13px; padding: 12px 10px; min-height: 46px; }
   .btn.full { width: 100%; margin-bottom: 10px; }
-
-  .select-input {
-    width: 100%; padding: 12px 14px;
-    background: var(--panel); color: var(--text);
-    border: 1px solid var(--border); border-radius: var(--radius);
-    font-size: 14px; font-weight: 600; font-family: inherit;
-    cursor: pointer; min-height: 46px;
-    -webkit-appearance: none; appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b93a7' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 40px; margin-bottom: 12px;
-  }
-  .select-input:focus { outline: none; border-color: var(--accent); }
 
   .section-label {
     font-size: 11px; font-weight: 600; color: var(--muted);
@@ -314,17 +412,52 @@
   .preview-label {
     font-size: 12px; font-weight: 600; color: var(--muted);
     text-transform: uppercase; letter-spacing: 0.5px;
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 8px;
+    min-width: 0;
   }
+  .preview-label > span:first-of-type { white-space: nowrap; }
   .live-dot {
     width: 7px; height: 7px;
     background: var(--success); border-radius: 50%;
     box-shadow: 0 0 6px var(--success);
     animation: pulse 1.5s infinite;
+    flex-shrink: 0;
   }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  .preview-tools { display: flex; gap: 6px; }
+  .device-icons {
+    display: flex;
+    gap: 2px;
+    background: var(--panel-2);
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-left: 4px;
+    flex-shrink: 0;
+  }
+  .device-icon {
+    width: 32px;
+    height: 28px;
+    border-radius: 7px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .device-icon svg { width: 15px; height: 15px; }
+  .device-icon.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 2px 6px rgba(99,102,241,0.3);
+  }
+  .device-icon:active { transform: scale(0.92); }
+
+  .preview-tools { display: flex; gap: 6px; flex-shrink: 0; }
   .btn-sm {
     padding: 8px 12px;
     background: var(--panel-2); border: 1px solid var(--border);
@@ -337,32 +470,6 @@
   .btn-sm:active { transform: scale(0.96); background: var(--panel-3); }
   .btn-sm svg { width: 14px; height: 14px; }
   .btn-sm.icon-only { padding: 8px 10px; }
-
-  .device-bar {
-    padding: 8px 12px;
-    background: var(--panel-2);
-    border-bottom: 1px solid var(--border);
-    display: flex; gap: 6px; justify-content: center; flex-shrink: 0;
-  }
-  .device-chip {
-    padding: 6px 14px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    color: var(--muted);
-    font-size: 11px; font-weight: 700; font-family: inherit;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 5px;
-    min-height: 34px;
-    transition: all 0.15s;
-    flex: 1; justify-content: center; max-width: 120px;
-  }
-  .device-chip svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .device-chip:active { transform: scale(0.96); }
-  .device-chip.active {
-    background: var(--accent); border-color: var(--accent); color: white;
-    box-shadow: 0 4px 12px rgba(99,102,241,0.3);
-  }
 
   .preview-stage {
     flex: 1; display: flex; overflow: hidden;
@@ -391,8 +498,7 @@
     display: block; min-height: 0;
   }
 
-  body.preview-fs .app-header,
-  body.preview-fs .bottom-nav { display: none; }
+  body.preview-fs .app-header { display: none; }
 
   /* ===== FIND PANEL ===== */
   .field-group {
@@ -609,12 +715,30 @@
     padding: 3px 9px;
     border-radius: 6px;
     font-family: 'JetBrains Mono', Consolas, monospace;
-    min-width: 32px;
+    min-width: 36px;
     text-align: center;
+    transition: all 0.2s;
   }
   .find-preview-count.empty { color: var(--muted); background: var(--panel-3); }
   .find-preview-count.error { color: var(--danger); background: rgba(239,68,68,0.12); }
   .find-preview-count.success { color: var(--success); background: rgba(16,185,129,0.12); }
+  .find-preview-count.flash-ok {
+    color: white;
+    background: var(--success);
+    box-shadow: 0 2px 10px rgba(16,185,129,0.4);
+    animation: flashPop 0.3s ease;
+  }
+  .find-preview-count.flash-err {
+    color: white;
+    background: var(--danger);
+    box-shadow: 0 2px 10px rgba(239,68,68,0.4);
+    animation: flashPop 0.3s ease;
+  }
+  @keyframes flashPop {
+    0% { transform: scale(0.7); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
   .find-preview-body {
     padding: 8px;
     max-height: 240px;
@@ -773,10 +897,14 @@
     border-color: rgba(245,158,11,0.3);
     background: rgba(245,158,11,0.08);
   }
+  .match-info.flash-ok {
+    animation: flashPop 0.35s ease;
+  }
 
   .find-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   /* ===== LOG ===== */
+  #panel-log { padding: 16px; }
   .log-header {
     display: flex; justify-content: space-between; align-items: center;
     font-size: 11px; font-weight: 600; color: var(--muted);
@@ -800,9 +928,9 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 6px;
-    max-height: 320px; overflow-y: auto;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    min-height: 80px;
+    min-height: 100px;
   }
   .log-empty {
     color: var(--muted); text-align: center;
@@ -831,7 +959,7 @@
   .log-entry.warn .msg { color: var(--warn); }
   .log-entry.info .msg { color: var(--text); opacity: 0.85; }
 
-  /* ===== TOOLS (Alat) ===== */
+  /* ===== TOOLS ===== */
   .tools-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -946,55 +1074,247 @@
   .analysis-item.info .ai-msg { color: var(--text); opacity: 0.85; }
   .analysis-item.ok .ai-msg { color: var(--success); }
 
-  /* ===== NAV ===== */
-  .bottom-nav {
-    flex-shrink: 0;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
-    padding: 6px 4px calc(6px + var(--safe-bottom));
-    box-shadow: 0 -4px 20px var(--shadow);
-  }
-  .nav-item {
-    background: transparent; border: none;
-    color: var(--muted); font-family: inherit;
-    font-size: 11px; font-weight: 600;
-    padding: 8px 4px; border-radius: 12px;
-    cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    min-height: 56px; justify-content: center;
-    transition: color 0.15s;
-    position: relative;
-  }
-  .nav-item svg { width: 22px; height: 22px; transition: transform 0.15s; }
-  .nav-item:active svg { transform: scale(0.9); }
-  .nav-item.active { color: var(--accent); }
-  .nav-item.active::before {
-    content: '';
-    position: absolute; top: 2px;
-    width: 24px; height: 3px;
-    background: var(--accent); border-radius: 2px;
-  }
+  /* ============ MENU DRAWER ============ */
+  .menu-overlay {
+  position: fixed; inset: 0;
+  z-index: 9998;
+}
+.menu-overlay[hidden] { display: none; }
+.menu-backdrop {
+  position: absolute; inset: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.menu-sheet {
+  position: absolute;
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  right: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px var(--shadow);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transform-origin: top right;
+  animation: menuDrop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes menuDrop {
+  from { opacity: 0; transform: scale(0.8) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.menu-item {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.12s;
+}
+.menu-item:active {
+  background: var(--accent);
+  color: white;
+  transform: scale(0.92);
+}
+.menu-item svg {
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+.menu-item[hidden] { display: none; }
+.menu-item.active {
+  background: rgba(99,102,241,0.14);
+  color: var(--accent);
+}
+.menu-item.active svg { color: var(--accent); }
+.menu-item.active {
+  background: rgba(99,102,241,0.14);
+  color: var(--accent);
+}
+.menu-item.active svg { color: var(--accent); }
 
-  .nav-badge {
-    position: absolute; top: 6px;
-    left: 50%; transform: translateX(3px);
-    width: 9px; height: 9px;
-    background: var(--danger); border-radius: 50%;
-    border: 2px solid var(--panel);
-    display: none;
-    box-shadow: 0 0 8px rgba(239,68,68,0.6);
-    animation: pulse 1.4s infinite;
+  /* ============ FIND MODAL ============ */
+  .find-modal {
+    position: fixed; inset: 0;
+    z-index: 9997;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: calc(74px + env(safe-area-inset-top, 0px)) 14px 14px;
+  }
+  .find-modal[hidden] { display: none; }
+  .find-modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    animation: fadeIn 0.15s ease;
+  }
+  .find-modal-box {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 12px 32px var(--shadow);
+    animation: modalDrop 0.22s ease;
     z-index: 1;
   }
-  .nav-item.has-badge .nav-badge { display: block; }
+  @keyframes modalDrop {
+    from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .find-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .find-modal-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .find-modal-title svg { width: 13px; height: 13px; }
+  .find-modal-close {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+    flex-shrink: 0;
+  }
+  .find-modal-close:active { transform: scale(0.94); }
+  .find-modal-close svg { width: 13px; height: 13px; }
+
+  .find-modal-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--panel-3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px 4px 3px 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+  }
+  .find-modal-row:focus-within {
+    border-color: var(--accent);
+  }
+  .find-modal-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 14px;
+    padding: 9px 0;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+  .find-modal-input::placeholder {
+    color: var(--muted);
+    opacity: 0.6;
+    font-family: system-ui, sans-serif;
+    font-style: italic;
+    font-size: 13px;
+  }
+  .find-modal-icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .find-modal-icon-btn:active {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+  .find-modal-icon-btn.danger:active {
+    color: var(--danger);
+  }
+  .find-modal-icon-btn svg { width: 16px; height: 16px; pointer-events: none; }
+
+  .find-modal-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .find-modal-counter {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    padding: 6px 12px;
+    background: rgba(99,102,241,0.12);
+    border-radius: 8px;
+    flex: 1;
+    text-align: center;
+    transition: all 0.2s;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .find-modal-counter.empty { color: var(--muted); background: var(--panel-3); }
+  .find-modal-counter.error { color: var(--danger); background: rgba(239,68,68,0.12); }
+  .find-modal-nav-btn {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: inherit;
+    transition: all 0.12s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .find-modal-nav-btn:active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: scale(0.94);
+  }
+  .find-modal-nav-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .find-modal-nav-btn svg { width: 16px; height: 16px; pointer-events: none; }
 
   /* ===== TOAST ===== */
   .toast-container {
-    position: fixed;
-    top: calc(66px + env(safe-area-inset-top, 0px));
-    left: 12px; right: 12px;
-    z-index: 9999;
+  display: none !important;
+  position: fixed;
+  top: calc(60px + env(safe-area-inset-top, 0px));
+  left: 12px; right: 12px;
+  z-index: 9999;
     display: flex; flex-direction: column; gap: 8px;
     pointer-events: none;
     max-width: 480px; margin: 0 auto;
@@ -1038,6 +1358,60 @@
   @keyframes toastOut {
     to { opacity: 0; transform: translateY(-10px) scale(0.96); }
   }
+
+  /* ============ FIND PANEL LAYOUT ============ */
+  #panel-find:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+  #panel-find .find-preview {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 180px;
+    max-height: 55vh;
+  }
+  #panel-find .find-preview-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-x: hidden;
+  }
+  #panel-find .find-preview-item {
+    min-width: 0;
+    overflow: hidden;
+  }
+  #panel-find .find-preview-text {
+    overflow-wrap: anywhere;
+  }
+  #panel-find .find-actions {
+    margin-bottom: 12px;
+  }
+  #panel-find .field-group:last-of-type {
+  margin-bottom: 0;
+}
+.find-footer {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.7;
+  padding: 10px 8px 4px;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  min-height: 0;
+  line-height: 1.4;
+}
+.find-footer .brand-name {
+  color: var(--accent);
+  font-weight: 700;
+}
+  .field-mini-btn.icon-only {
+    padding: 6px 10px;
+  }
 </style>
 </head>
 <body>
@@ -1055,6 +1429,14 @@
     <button class="icon-btn" id="themeBtn" title="Ganti tema">
       <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
     </button>
+    <button class="icon-btn" id="menuBtn" title="Menu" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <circle cx="12" cy="5" r="1.8"></circle>
+        <circle cx="12" cy="12" r="1.8"></circle>
+        <circle cx="12" cy="19" r="1.8"></circle>
+      </svg>
+      <span class="menu-badge" id="menuBadge"></span>
+    </button>
   </div>
 </header>
 
@@ -1064,7 +1446,6 @@
 
   <!-- ============ HOME ============ -->
   <section class="tab-panel" id="panel-home">
-
     <div class="code-wrap">
       <div class="code-header">
         <div class="code-title">
@@ -1073,74 +1454,65 @@
           <span class="save-status" id="saveStatus"><span class="dot"></span><span class="label">Tersimpan</span></span>
         </div>
         <div class="code-tools">
-          
-          <button class="mini-btn" id="undoBtn" title="Undo" disabled>↶</button>
-          <button class="mini-btn" id="redoBtn" title="Redo" disabled>↷</button>
+          <button class="mini-btn text-btn" id="copyAllBtn" title="Copy semua kode">Copy</button>
+          <button class="mini-btn text-btn" id="pasteBtn" title="Paste dari clipboard">Paste</button>
+          <button class="mini-btn" id="importBtn" title="Import file HTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </button>
+          <button class="mini-btn" id="findJumpBtn" title="Cari teks di beranda">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button class="mini-btn" id="undoBtn" title="Undo" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+          </button>
+          <button class="mini-btn" id="redoBtn" title="Redo" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+          </button>
           <button class="mini-btn" id="fontDecBtn" title="Perkecil font">A−</button>
           <span class="font-display" id="fontDisplay">13</span>
           <button class="mini-btn" id="fontIncBtn" title="Perbesar font">A+</button>
-          <button class="mini-btn" id="pasteBtn" title="Paste">📋</button>
-          <button class="mini-btn" id="copyAllBtn" title="Copy">📄</button>
-          <button class="mini-btn" id="clearBtn" title="Hapus">🗑</button>
+          <button class="mini-btn" id="clearBtn" title="Hapus semua">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
         </div>
       </div>
+
+      <div class="file-info" id="fileInfo" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="fname" id="fileName">-</span>
+        <button class="clear-file" id="clearFileBtn" title="Lupakan file">✕</button>
+      </div>
+
       <textarea id="codeArea" placeholder="Paste atau tulis kode HTML di sini..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
-    </div>
 
-    <button class="import-btn" id="importBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
-      Import File HTML
-    </button>
-    <input type="file" id="fileInput" accept=".html,.htm,.txt,text/html" hidden>
-
-    <div class="file-info" id="fileInfo" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-      </svg>
-      <span class="fname" id="fileName">-</span>
-      <button class="clear-file" id="clearFileBtn" title="Lupakan file">✕</button>
-    </div>
-
-    
-
-    <select class="select-input" id="templateSelect">
-      <option value="">📝 Sisipkan Template...</option>
-      <option value="html5">HTML5 Boilerplate</option>
-      <option value="form">Form Sederhana</option>
-      <option value="card">Card Produk</option>
-      <option value="nav">Navbar</option>
-      <option value="button">Tombol</option>
-    </select>
-
-    <!-- LOG DI BAGIAN BAWAH BERANDA -->
-    <div class="section-label">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="8" y1="6" x2="21" y2="6"></line>
-        <line x1="8" y1="12" x2="21" y2="12"></line>
-        <line x1="8" y1="18" x2="21" y2="18"></line>
-        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-      </svg>
-      Riwayat Aktivitas
-    </div>
-
-    <div class="log-header">
-      <div class="log-header-left">📋 Log</div>
-      <div class="log-actions">
-        <button class="log-action" id="logCopyBtn">Copy</button>
-        <button class="log-action" id="logClearBtn">Bersihkan</button>
+      <div class="arrow-nav">
+        <button class="arrow-btn" data-move="up" type="button" title="Geser ke atas">▲</button>
+        <button class="arrow-btn" data-move="down" type="button" title="Geser ke bawah">▼</button>
+        <button class="arrow-btn" data-move="left" type="button" title="Geser ke kiri">◀</button>
+        <button class="arrow-btn" data-move="right" type="button" title="Geser ke kanan">▶</button>
       </div>
     </div>
-    <div class="log-list" id="logList">
-      <div class="log-empty">Belum ada aktivitas</div>
-    </div>
 
+    <input type="file" id="fileInput" accept=".html,.htm,.txt,text/html" hidden>
   </section>
 
   <!-- ============ PREVIEW ============ -->
@@ -1148,13 +1520,32 @@
     <div class="preview-toolbar">
       <div class="preview-label">
         <span class="live-dot"></span>
-        Live Preview
+        <span>Live Preview</span>
+        <div class="device-icons">
+          <button class="device-icon" data-device="mobile" title="Mobile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+              <line x1="12" y1="18" x2="12" y2="18.01"></line>
+            </svg>
+          </button>
+          <button class="device-icon" data-device="tablet" title="Tablet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+              <line x1="12" y1="18" x2="12" y2="18.01"></line>
+            </svg>
+          </button>
+          <button class="device-icon active" data-device="desktop" title="Desktop">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </button>
+        </div>
       </div>
       <div class="preview-tools">
         <button class="btn-sm icon-only" id="fullscreenBtn" title="Fullscreen">
-          <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-          </svg>
+          <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></svg>
         </button>
         <button class="btn-sm" id="refreshBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1164,30 +1555,6 @@
           Refresh
         </button>
       </div>
-    </div>
-    <div class="device-bar">
-      <button class="device-chip" data-device="mobile" title="Tampilan HP">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="7" y="2" width="10" height="20" rx="2"></rect>
-          <line x1="12" y1="18" x2="12" y2="18.01"></line>
-        </svg>
-        Mobile
-      </button>
-      <button class="device-chip" data-device="tablet" title="Tampilan Tablet">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-          <line x1="12" y1="18" x2="12" y2="18.01"></line>
-        </svg>
-        Tablet
-      </button>
-      <button class="device-chip active" data-device="desktop" title="Tampilan Desktop">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="3" width="20" height="14" rx="2"></rect>
-          <line x1="8" y1="21" x2="16" y2="21"></line>
-          <line x1="12" y1="17" x2="12" y2="21"></line>
-        </svg>
-        Desktop
-      </button>
     </div>
     <div class="preview-stage">
       <div class="preview-frame-wrap" id="previewWrap" data-device="desktop">
@@ -1210,14 +1577,39 @@
         </span>
         <span class="find-preview-count empty" id="findPreviewCount">—</span>
       </div>
-      <div class="find-preview-body" id="findPreviewBody">
-        <div class="find-preview-empty">Ketik di kolom "Cari teks" untuk melihat pratinjau</div>
-      </div>
-    </div>
+        <div class="find-preview-body" id="findPreviewBody">
+    <div class="find-preview-empty">Ketik di kolom "Cari teks" untuk melihat pratinjau</div>
+  </div>
+</div>
 
-    <div class="field-group">
-      <div class="field-label-row">
-        <label for="findInput">🔍 Cari teks</label>
+<div class="match-info" id="matchInfo">Masukkan teks untuk mencari</div>
+
+<div class="match-nav" id="matchNav" hidden>
+  <button class="match-nav-btn" id="matchPrevBtn" type="button" title="Sebelumnya">◀</button>
+  <span class="match-nav-counter" id="matchCounter">1 / 1</span>
+  <button class="match-nav-btn" id="matchNextBtn" type="button" title="Berikutnya">▶</button>
+</div>
+
+<div class="find-actions">
+  <button class="btn compact" id="replaceOneBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 11 12 14 22 4"></polyline>
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+    </svg>
+    Ganti 1
+  </button>
+  <button class="btn compact primary" id="replaceAllBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 11 12 14 22 4"></polyline>
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+    </svg>
+    Ganti Semua
+  </button>
+</div>
+
+<div class="field-group">
+  <div class="field-label-row">
+    <label for="findInput">🔍 Cari teks</label>
         <div class="field-buttons">
           <button class="field-mini-btn clear-btn" data-clear-target="findInput" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1259,9 +1651,17 @@
 
     <div class="field-group">
       <div class="field-label-row">
-        <label for="replaceInput">✏️ Ganti dengan</label>
-        <div class="field-buttons">
-          <button class="field-mini-btn clear-btn" data-clear-target="replaceInput" type="button">
+  <label for="replaceInput">✏️ Ganti dengan</label>
+  <div class="field-buttons">
+    <button class="field-mini-btn icon-only" id="swapBtn" type="button" title="Tukar Cari ↔ Ganti" aria-label="Tukar Cari dan Ganti">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="17 1 21 5 17 9"></polyline>
+        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+        <polyline points="7 23 3 19 7 15"></polyline>
+        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+      </svg>
+    </button>
+    <button class="field-mini-btn clear-btn" data-clear-target="replaceInput" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -1277,46 +1677,15 @@
           </button>
         </div>
       </div>
-      <textarea id="replaceInput" class="field-input" rows="1" placeholder="Teks pengganti... (bisa multi-baris)" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
-    </div>
+          <textarea id="replaceInput" class="field-input" rows="1" placeholder="Teks pengganti... (bisa multi-baris)" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+  </div>
 
-    <button class="swap-btn" id="swapBtn" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="17 1 21 5 17 9"></polyline>
-        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-        <polyline points="7 23 3 19 7 15"></polyline>
-        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
-      </svg>
-      Tukar Cari ↔ Ganti
-    </button>
+  <div class="find-footer">HTMLeditor v3.0 by <span class="brand-name">Randy CreativeTech</span> @2026</div>
 
-    <div class="match-info" id="matchInfo">Masukkan teks untuk mencari</div>
+  <!-- Tukar Cari/Ganti dipindah ke header Ganti dengan -->
+</section>
 
-    <div class="match-nav" id="matchNav" hidden>
-      <button class="match-nav-btn" id="matchPrevBtn" type="button" title="Sebelumnya">◀</button>
-      <span class="match-nav-counter" id="matchCounter">1 / 1</span>
-      <button class="match-nav-btn" id="matchNextBtn" type="button" title="Berikutnya">▶</button>
-    </div>
-
-    <div class="find-actions">
-      <button class="btn compact" id="replaceOneBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 11 12 14 22 4"></polyline>
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-        </svg>
-        Ganti 1
-      </button>
-      <button class="btn compact primary" id="replaceAllBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 11 12 14 22 4"></polyline>
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-        </svg>
-        Ganti Semua
-      </button>
-    </div>
-  </section>
-
-  <!-- ============ ALAT (dulu Log) ============ -->
+  <!-- ============ TOOLS ============ -->
   <section class="tab-panel" id="panel-tools" hidden>
 
     <div class="section-label">
@@ -1434,38 +1803,126 @@
 
   </section>
 
+  <!-- ============ LOG ============ -->
+  <section class="tab-panel" id="panel-log" hidden>
+    <div class="section-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+      Riwayat Aktivitas
+    </div>
+
+    <div class="log-header">
+      <div class="log-header-left">📋 Log Aktivitas</div>
+      <div class="log-actions">
+        <button class="log-action" id="logCopyBtn">Copy</button>
+        <button class="log-action" id="logClearBtn">Bersihkan</button>
+      </div>
+    </div>
+    <div class="log-list" id="logList">
+      <div class="log-empty">Belum ada aktivitas</div>
+    </div>
+  </section>
+
 </main>
 
-<nav class="bottom-nav">
-  <button class="nav-item active" data-tab="home">
+<!-- ============ MENU DRAWER ============ -->
+<div class="menu-overlay" id="menuOverlay" hidden>
+  <button class="menu-backdrop" id="menuBackdrop" type="button" aria-label="Tutup menu"></button>
+  <div class="menu-sheet" role="menu" aria-label="Navigasi">
+  <button class="menu-item" data-tab="home" type="button" role="menuitem" title="Beranda" aria-label="Beranda">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
       <polyline points="9 22 9 12 15 12 15 22"></polyline>
     </svg>
-    <span>Beranda</span>
   </button>
-  <button class="nav-item" data-tab="preview">
+
+  <button class="menu-item" data-tab="preview" type="button" role="menuitem" title="Preview" aria-label="Preview">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <circle cx="12" cy="12" r="3"></circle>
     </svg>
-    <span>Preview</span>
   </button>
-  <button class="nav-item" data-tab="find">
+
+  <button class="menu-item" data-tab="find" type="button" role="menuitem" title="Cari &amp; Ganti" aria-label="Cari dan Ganti">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
     </svg>
-    <span>Cari</span>
   </button>
-  <button class="nav-item" data-tab="tools">
-    <span class="nav-badge" id="navBadge"></span>
+
+  <button class="menu-item" data-tab="tools" type="button" role="menuitem" title="Alat" aria-label="Alat">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
     </svg>
-    <span>Alat</span>
   </button>
-</nav>
+
+  <button class="menu-item" data-tab="log" type="button" role="menuitem" title="Log Aktivitas" aria-label="Log Aktivitas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+    </svg>
+  </button>
+</div>
+
+<!-- ============ FIND MODAL ============ -->
+<div class="find-modal" id="findModal" hidden>
+  <button class="find-modal-backdrop" id="findModalBackdrop" type="button" aria-label="Tutup"></button>
+  <div class="find-modal-box" role="dialog" aria-label="Cari di beranda">
+    <div class="find-modal-header">
+      <span class="find-modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        Cari di Beranda
+      </span>
+      <button class="find-modal-close" id="findModalClose" type="button" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="find-modal-row">
+      <input type="text" class="find-modal-input" id="quickFindInput" placeholder="Ketik teks yang dicari..." autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
+      <button class="find-modal-icon-btn" id="quickFindPaste" type="button" title="Paste dari clipboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+      </button>
+      <button class="find-modal-icon-btn danger" id="quickFindClear" type="button" title="Hapus input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="find-modal-nav">
+      <button class="find-modal-nav-btn" id="quickFindPrev" type="button" title="Sebelumnya" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <span class="find-modal-counter empty" id="quickFindCounter">—</span>
+      <button class="find-modal-nav-btn" id="quickFindNext" type="button" title="Berikutnya" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -1481,7 +1938,7 @@
   var STORAGE_OPT_REGEX = 'hp_opt_regex';
   var STORAGE_OPT_SMART = 'hp_opt_smart';
   var STORAGE_TOOLS_CODE = 'hp_tools_code';
-  var APP_VERSION = '1.5';
+  var APP_VERSION = '1.7';
   var MAX_LOG = 50;
 
   var DEFAULT_FONT = 13;
@@ -1491,14 +1948,7 @@
   var MAX_HISTORY = 100;
   var MAX_PREVIEW_ITEMS = 5;
   var PREVIEW_CTX = 30;
-
-  var TEMPLATES = {
-    html5: '<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Dokumen Baru</title>\n  <style>\n    body {\n      font-family: system-ui, sans-serif;\n      max-width: 800px;\n      margin: 0 auto;\n      padding: 20px;\n      line-height: 1.6;\n    }\n  </style>\n</head>\n<body>\n  <h1>Hello World</h1>\n  <p>Halaman baru siap diedit.</p>\n</body>\n</html>',
-    form: '<form onsubmit="event.preventDefault(); alert(\'Terkirim!\');">\n  <div>\n    <label>Nama</label>\n    <input type="text" name="nama" required>\n  </div>\n  <div>\n    <label>Email</label>\n    <input type="email" name="email" required>\n  </div>\n  <div>\n    <label>Pesan</label>\n    <textarea name="pesan" rows="4"></textarea>\n  </div>\n  <button type="submit">Kirim</button>\n</form>',
-    card: '<div class="card" style="border:1px solid #e2e8f0;border-radius:12px;padding:16px;max-width:300px;">\n  <img src="https://picsum.photos/300/200" alt="Gambar" style="width:100%;border-radius:8px;">\n  <h3 style="margin:12px 0 6px;">Judul Produk</h3>\n  <p style="color:#64748b;font-size:14px;">Deskripsi singkat produk Anda di sini.</p>\n  <button style="width:100%;margin-top:12px;padding:10px;background:#6366f1;color:white;border:none;border-radius:8px;font-weight:600;">Beli Sekarang</button>\n</div>',
-    nav: '<nav style="display:flex;gap:8px;padding:12px;background:#1e293b;border-radius:8px;">\n  <a href="#" style="color:white;text-decoration:none;padding:8px 12px;">Home</a>\n  <a href="#" style="color:white;text-decoration:none;padding:8px 12px;">Produk</a>\n  <a href="#" style="color:white;text-decoration:none;padding:8px 12px;">Tentang</a>\n  <a href="#" style="color:white;text-decoration:none;padding:8px 12px;">Kontak</a>\n</nav>',
-    button: '<button onclick="alert(\'Diklik!\')" style="padding:12px 24px;background:#6366f1;color:white;border:none;border-radius:10px;font-weight:600;font-size:15px;cursor:pointer;">\n  Klik Saya\n</button>'
-  };
+  var MAX_QUICK_FIND = 1000;
 
   var AI_PROMPT = [
     'KONTEKS:',
@@ -1582,7 +2032,7 @@
   var logListEl = $('logList');
   var fontDisplay = $('fontDisplay');
   var fullscreenIcon = $('fullscreenIcon');
-  var navBadge = $('navBadge');
+  var menuBadge = $('menuBadge');
   var undoBtn = $('undoBtn');
   var redoBtn = $('redoBtn');
   var saveStatusEl = $('saveStatus');
@@ -1596,6 +2046,21 @@
   var matchNextBtn = $('matchNextBtn');
   var analysisBox = $('analysisBox');
 
+  var menuOverlay = $('menuOverlay');
+  var menuBackdrop = $('menuBackdrop');
+  /* menuCloseBtn dihapus — tutup menu via backdrop / ESC */
+  var menuItems = document.querySelectorAll('.menu-item');
+
+  var findModal = $('findModal');
+  var findModalBackdrop = $('findModalBackdrop');
+  var findModalClose = $('findModalClose');
+  var quickFindInput = $('quickFindInput');
+  var quickFindPaste = $('quickFindPaste');
+  var quickFindClear = $('quickFindClear');
+  var quickFindPrev = $('quickFindPrev');
+  var quickFindNext = $('quickFindNext');
+  var quickFindCounter = $('quickFindCounter');
+
   var currentFilename = '';
   var logEntries = [];
   var isOnFindTab = false;
@@ -1603,6 +2068,10 @@
   var themeMode = 'auto';
   var currentDevice = 'desktop';
   var currentMatchIndex = 0;
+  var currentTab = 'home';
+
+  var quickFindMatches = [];
+  var quickFindIndex = 0;
 
   var searchOpts = {
     caseSensitive: false,
@@ -1650,9 +2119,11 @@
 
   /* ============ TOAST ============ */
   function showToast(msg, type, duration) {
-    type = type || 'info';
-    duration = duration || 2600;
-    if (!toastContainerEl) return;
+  // Toast dimatikan — kalau mau aktifkan, hapus baris `return;` di bawah
+  return;
+  type = type || 'info';
+  duration = duration || 2600;
+  if (!toastContainerEl) return;
     var icons = { success: '✅', error: '❌', warn: '⚠️', info: 'ℹ️' };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
@@ -1736,9 +2207,9 @@
     if (logEntries.length > MAX_LOG) logEntries.pop();
     renderLog();
 
-    if (!isOnToolsTab && navBadge && (type === 'error' || type === 'warn')) {
-      var toolsNav = document.querySelector('.nav-item[data-tab="tools"]');
-      if (toolsNav) toolsNav.classList.add('has-badge');
+    // Badge di tombol menu (bukan nav lagi)
+    if (!isOnToolsTab && menuBadge && (type === 'error' || type === 'warn')) {
+      menuBadge.classList.add('show');
     }
   }
 
@@ -1920,7 +2391,6 @@
     var TIME_BUDGET = 150;
     var startTime = Date.now();
 
-    // Fast path: literal search (mode biasa tanpa regex/smart/wholeWord)
     if (!searchOpts.regex && !searchOpts.smart && !searchOpts.wholeWord) {
       var haystack = searchOpts.caseSensitive ? text : text.toLowerCase();
       var needle = searchOpts.caseSensitive ? find : find.toLowerCase();
@@ -1935,7 +2405,6 @@
       return fc;
     }
 
-    // Path regex
     var re = buildSearchRegex(find, searchOpts);
     if (!re) return 0;
     var count = 0;
@@ -1968,8 +2437,11 @@
   }
 
   /* ============ FIND PREVIEW ============ */
+  var flashCountTimer = null;
+
   function renderFindPreview(totalParam) {
     if (!findPreviewBody || !findPreviewCount) return;
+    if (flashCountTimer) { clearTimeout(flashCountTimer); flashCountTimer = null; }
     var find = findInput.value;
 
     if (!find) {
@@ -2061,6 +2533,28 @@
     }
 
     findPreviewBody.innerHTML = html;
+  }
+
+  function flashPreviewCount(type, text, duration) {
+    if (!findPreviewCount) return;
+    if (flashCountTimer) { clearTimeout(flashCountTimer); flashCountTimer = null; }
+
+    findPreviewCount.textContent = text;
+    findPreviewCount.className = 'find-preview-count ' + (type === 'success' ? 'flash-ok' : 'flash-err');
+
+    flashCountTimer = setTimeout(function() {
+      flashCountTimer = null;
+      var find = findInput.value;
+      if (!find) return;
+      var total = countMatches();
+      if (total === 0) {
+        findPreviewCount.textContent = '0x';
+        findPreviewCount.className = 'find-preview-count error';
+      } else {
+        findPreviewCount.textContent = total + 'x';
+        findPreviewCount.className = 'find-preview-count success';
+      }
+    }, duration || 3000);
   }
 
   /* ============ MATCH NAVIGATOR ============ */
@@ -2159,6 +2653,18 @@
     }
     updateMatchNavUI(count);
     renderFindPreview(count);
+  }
+
+  function setMatchInfoReport(text, type) {
+    if (!matchInfo) return;
+    matchInfo.textContent = text;
+    matchInfo.className = 'match-info' + (type ? ' ' + type : '');
+    if (type === 'success') {
+      matchInfo.classList.add('flash-ok');
+      setTimeout(function() {
+        if (matchInfo) matchInfo.classList.remove('flash-ok');
+      }, 500);
+    }
   }
 
   var matchInfoTimer = null;
@@ -2270,9 +2776,11 @@
     if (!res.ok) {
       if (res.reason === 'invalid') {
         setMatchInfoReport('❌ Pola pencarian tidak valid', 'error');
+        flashPreviewCount('error', '✗', 2500);
         log('Ganti 1 gagal — pola tidak valid', 'error');
       } else {
         setMatchInfoReport('❌ Teks tidak ditemukan', 'error');
+        flashPreviewCount('error', '✗', 2500);
         log('Ganti 1 gagal — tidak ditemukan', 'error');
       }
       return;
@@ -2280,13 +2788,16 @@
 
     codeArea.value = res.newText;
     afterCodeChange();
+    updateMatchInfo();
 
     var remaining = countMatches();
     if (remaining > 0) {
       setMatchInfoReport('✅ Berhasil diganti · sisa ' + remaining + 'x', 'success');
+      flashPreviewCount('success', '✓ OK', 3000);
       log('Ganti 1 berhasil · sisa ' + remaining + 'x', 'success');
     } else {
       setMatchInfoReport('✅ Berhasil diganti (tuntas)', 'success');
+      flashPreviewCount('success', '✓', 3000);
       log('Ganti 1 berhasil · tuntas', 'success');
     }
   });
@@ -2310,19 +2821,23 @@
 
     if (!res.ok) {
       setMatchInfoReport('❌ Gagal mengganti — cek pola', 'error');
+      flashPreviewCount('error', '✗', 2500);
       log('Ganti Semua gagal', 'error'); return;
     }
     if (res.count === 0) {
       setMatchInfoReport('❌ Tidak ada yang cocok', 'error');
+      flashPreviewCount('error', '✗', 2500);
       log('Ganti Semua gagal — tidak ada kecocokan', 'error'); return;
     }
 
     codeArea.value = res.newText;
     afterCodeChange();
+    updateMatchInfo();
 
     var remaining = countMatches();
     if (remaining === 0) {
       setMatchInfoReport('✅ ' + res.count + ' kecocokan diganti (tuntas)', 'success');
+      flashPreviewCount('success', '✓ ' + res.count, 3500);
       log('Ganti Semua berhasil (' + res.count + 'x) · tuntas', 'success');
     } else {
       var reCheck = buildSearchRegex(find, searchOpts);
@@ -2330,9 +2845,11 @@
       if (reCheck) { reCheck.lastIndex = 0; replaceContainsFind = reCheck.test(replaceInput.value); }
       if (replaceContainsFind) {
         setMatchInfoReport('✅ ' + res.count + 'x diganti · sisa ' + remaining + 'x (pengganti mengandung teks asli)', 'success');
+        flashPreviewCount('success', '✓ ' + res.count, 3500);
         log('Ganti Semua: ' + res.count + 'x · sisa ' + remaining + 'x (pengganti mengandung teks asli)', 'info');
       } else {
         setMatchInfoReport('⚠️ Diganti ' + res.count + 'x · sisa ' + remaining + 'x', 'warn');
+        flashPreviewCount('success', '✓ ' + res.count, 3500);
         log('Ganti Semua: ' + res.count + 'x · sisa ' + remaining + 'x', 'warn');
       }
     }
@@ -2343,7 +2860,6 @@
     flushHistoryTimer();
     pushHistoryImmediate();
     resetMatchNav();
-    updateMatchInfo();
     scheduleSave();
   }
 
@@ -2605,17 +3121,130 @@
   window.addEventListener('beforeunload', function() { flushHistoryTimer(); saveCode(); });
   window.addEventListener('pagehide', function() { flushHistoryTimer(); saveCode(); });
 
+  /* ============ ARROW NAVIGATION ============ */
+  function moveCursor(dir) {
+    var val = codeArea.value;
+    var start = codeArea.selectionStart;
+    var end = codeArea.selectionEnd;
+    var pos;
+
+    if (dir === 'left') pos = start;
+    else pos = end;
+
+    if (start !== end) {
+      codeArea.setSelectionRange(pos, pos);
+      codeArea.focus();
+      return;
+    }
+
+    if (dir === 'left') {
+      if (pos > 0) pos--;
+    } else if (dir === 'right') {
+      if (pos < val.length) pos++;
+    } else if (dir === 'up') {
+      var lineStart = val.lastIndexOf('\n', pos - 1) + 1;
+      if (lineStart === 0) {
+        pos = 0;
+      } else {
+        var col = pos - lineStart;
+        var prevLineEnd = lineStart - 1;
+        var prevLineStart = val.lastIndexOf('\n', prevLineEnd - 1) + 1;
+        var prevLineLen = prevLineEnd - prevLineStart;
+        var newCol = Math.min(col, prevLineLen);
+        pos = prevLineStart + newCol;
+      }
+    } else if (dir === 'down') {
+      var lineEnd = val.indexOf('\n', pos);
+      if (lineEnd === -1) {
+        pos = val.length;
+      } else {
+        var lineStart2 = val.lastIndexOf('\n', pos - 1) + 1;
+        var col2 = pos - lineStart2;
+        var nextLineStart = lineEnd + 1;
+        var nextLineEnd = val.indexOf('\n', nextLineStart);
+        if (nextLineEnd === -1) nextLineEnd = val.length;
+        var nextLineLen = nextLineEnd - nextLineStart;
+        var newCol2 = Math.min(col2, nextLineLen);
+        pos = nextLineStart + newCol2;
+      }
+    }
+
+    codeArea.setSelectionRange(pos, pos);
+    codeArea.focus();
+  }
+
+  var arrowBtns = document.querySelectorAll('.arrow-btn');
+  var repeatTimeout = null;
+  var repeatInterval = null;
+
+  function startRepeat(dir, btn) {
+    if (btn) btn.classList.add('active');
+    moveCursor(dir);
+    repeatTimeout = setTimeout(function() {
+      repeatInterval = setInterval(function() {
+        moveCursor(dir);
+      }, 60);
+    }, 400);
+  }
+
+  function stopRepeat(btn) {
+    if (btn) btn.classList.remove('active');
+    if (repeatTimeout) { clearTimeout(repeatTimeout); repeatTimeout = null; }
+    if (repeatInterval) { clearInterval(repeatInterval); repeatInterval = null; }
+  }
+
+  for (var ab = 0; ab < arrowBtns.length; ab++) {
+    (function(btn) {
+      var dir = btn.getAttribute('data-move');
+      var touchStarted = false;
+
+      btn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        touchStarted = true;
+        startRepeat(dir, btn);
+      }, { passive: false });
+
+      btn.addEventListener('touchend', function() {
+        touchStarted = false;
+        stopRepeat(btn);
+      });
+
+      btn.addEventListener('touchcancel', function() {
+        touchStarted = false;
+        stopRepeat(btn);
+      });
+
+      btn.addEventListener('mousedown', function(e) {
+        if (touchStarted) return;
+        e.preventDefault();
+        startRepeat(dir, btn);
+      });
+
+      btn.addEventListener('mouseup', function() {
+        stopRepeat(btn);
+      });
+
+      btn.addEventListener('mouseleave', function() {
+        stopRepeat(btn);
+      });
+
+      btn.addEventListener('click', function(e) {
+        if (touchStarted) return;
+        if (!repeatTimeout && !repeatInterval) {
+          moveCursor(dir);
+        }
+      });
+    })(arrowBtns[ab]);
+  }
+
   /* ============ TAB SWITCHING ============ */
-  var navItems = document.querySelectorAll('.nav-item');
   var panels = document.querySelectorAll('.tab-panel');
 
   function switchTab(tab) {
+    currentTab = tab;
     isOnFindTab = (tab === 'find');
     isOnToolsTab = (tab === 'tools');
 
-    for (var i = 0; i < navItems.length; i++) {
-      navItems[i].classList.toggle('active', navItems[i].getAttribute('data-tab') === tab);
-    }
     for (var j = 0; j < panels.length; j++) {
       panels[j].hidden = panels[j].id !== 'panel-' + tab;
     }
@@ -2627,18 +3256,185 @@
     }
     if (tab === 'find') updateMatchInfo();
     if (tab === 'tools') {
-      var toolsNav = document.querySelector('.nav-item[data-tab="tools"]');
-      if (toolsNav) toolsNav.classList.remove('has-badge');
+      if (menuBadge) menuBadge.classList.remove('show');
     }
   }
 
-  for (var i = 0; i < navItems.length; i++) {
+  /* ============ MENU DRAWER ============ */
+  function openMenu() {
+  for (var i = 0; i < menuItems.length; i++) {
+    var isActive = (menuItems[i].getAttribute('data-tab') === currentTab);
+    menuItems[i].classList.toggle('active', isActive);
+    menuItems[i].hidden = false;
+  }
+  if (menuBadge) menuBadge.classList.remove('show');
+  menuOverlay.hidden = false;
+}
+
+  function closeMenu() {
+    menuOverlay.hidden = true;
+  }
+
+  $('menuBtn').addEventListener('click', openMenu);
+menuBackdrop.addEventListener('click', closeMenu);
+
+  for (var mi = 0; mi < menuItems.length; mi++) {
     (function(item) {
       item.addEventListener('click', function() {
-        switchTab(item.getAttribute('data-tab'));
+        var tab = item.getAttribute('data-tab');
+        closeMenu();
+        switchTab(tab);
       });
-    })(navItems[i]);
+    })(menuItems[mi]);
   }
+
+  /* ============ QUICK FIND (Beranda) ============ */
+  function getQuickFindMatches() {
+    var find = quickFindInput.value;
+    if (!find) return [];
+    var text = codeArea.value;
+    var haystack = text.toLowerCase();
+    var needle = find.toLowerCase();
+    var matches = [];
+    var idx = 0;
+    while ((idx = haystack.indexOf(needle, idx)) !== -1) {
+      matches.push({ start: idx, end: idx + find.length });
+      idx += needle.length;
+      if (matches.length >= MAX_QUICK_FIND) break;
+    }
+    return matches;
+  }
+
+  function updateQuickFindUI() {
+    var find = quickFindInput.value;
+    if (!find) {
+      quickFindCounter.textContent = '—';
+      quickFindCounter.className = 'find-modal-counter empty';
+      quickFindPrev.disabled = true;
+      quickFindNext.disabled = true;
+      return;
+    }
+    quickFindMatches = getQuickFindMatches();
+    if (quickFindMatches.length === 0) {
+      quickFindCounter.textContent = '0 hasil';
+      quickFindCounter.className = 'find-modal-counter error';
+      quickFindPrev.disabled = true;
+      quickFindNext.disabled = true;
+    } else {
+      if (quickFindIndex >= quickFindMatches.length) quickFindIndex = 0;
+      if (quickFindIndex < 0) quickFindIndex = 0;
+      quickFindCounter.textContent = (quickFindIndex + 1) + ' / ' + quickFindMatches.length;
+      quickFindCounter.className = 'find-modal-counter';
+      quickFindPrev.disabled = false;
+      quickFindNext.disabled = false;
+    }
+  }
+
+  function gotoQuickFind(idx) {
+    if (quickFindMatches.length === 0) return;
+    if (idx < 0) idx = quickFindMatches.length - 1;
+    if (idx >= quickFindMatches.length) idx = 0;
+    quickFindIndex = idx;
+    var m = quickFindMatches[idx];
+    try {
+      codeArea.focus();
+      codeArea.setSelectionRange(m.start, m.end);
+    } catch (e) {}
+    scrollTextareaToMatch(m.start);
+    updateQuickFindUI();
+  }
+
+  function scrollTextareaToMatch(charIndex) {
+    try {
+      var text = codeArea.value;
+      var before = text.substring(0, charIndex);
+      var lineCount = (before.match(/\n/g) || []).length;
+      var style = getComputedStyle(codeArea);
+      var lineHeight = parseFloat(style.lineHeight) || 20;
+      var paddingTop = parseFloat(style.paddingTop) || 12;
+      var targetScroll = paddingTop + lineCount * lineHeight - codeArea.clientHeight / 3;
+      codeArea.scrollTop = Math.max(0, targetScroll);
+    } catch (e) {}
+  }
+
+  quickFindInput.addEventListener('input', function() {
+    quickFindIndex = 0;
+    updateQuickFindUI();
+    if (quickFindMatches.length > 0) gotoQuickFind(0);
+  });
+
+  quickFindInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (e.shiftKey) gotoQuickFind(quickFindIndex - 1);
+      else gotoQuickFind(quickFindIndex + 1);
+    }
+  });
+
+  quickFindPrev.addEventListener('click', function() { gotoQuickFind(quickFindIndex - 1); });
+  quickFindNext.addEventListener('click', function() { gotoQuickFind(quickFindIndex + 1); });
+
+  quickFindPaste.addEventListener('click', function() {
+    if (navigator.clipboard && navigator.clipboard.readText) {
+      navigator.clipboard.readText().then(function(text) {
+        if (!text) { showToast('Clipboard kosong', 'warn'); return; }
+        quickFindInput.value = text.split('\n')[0].slice(0, 200);
+        quickFindIndex = 0;
+        updateQuickFindUI();
+        if (quickFindMatches.length > 0) gotoQuickFind(0);
+        showToast('Paste ke pencarian', 'success');
+      }).catch(function() {
+        quickFindInput.focus();
+        showToast('Clipboard diblokir — tekan lama di input', 'warn');
+      });
+    } else {
+      quickFindInput.focus();
+      showToast('Tekan lama di input → Paste', 'warn');
+    }
+  });
+
+  quickFindClear.addEventListener('click', function() {
+    if (!quickFindInput.value) { showToast('Input sudah kosong', 'info'); return; }
+    quickFindInput.value = '';
+    quickFindMatches = [];
+    quickFindIndex = 0;
+    updateQuickFindUI();
+    quickFindInput.focus();
+  });
+
+  function openFindModal() {
+    findModal.hidden = false;
+    // Prefill dari seleksi textarea (kalau ada & pendek)
+    try {
+      var sel = codeArea.value.substring(codeArea.selectionStart, codeArea.selectionEnd);
+      if (sel && sel.length < 100 && !/\n/.test(sel)) {
+        quickFindInput.value = sel;
+      }
+    } catch (e) {}
+    quickFindIndex = 0;
+    updateQuickFindUI();
+    setTimeout(function() {
+      try { quickFindInput.focus(); } catch (e) {}
+    }, 120);
+  }
+
+  function closeFindModal() {
+    findModal.hidden = true;
+    quickFindMatches = [];
+    quickFindIndex = 0;
+  }
+
+  $('findJumpBtn').addEventListener('click', openFindModal);
+  findModalClose.addEventListener('click', closeFindModal);
+  findModalBackdrop.addEventListener('click', closeFindModal);
+
+  /* ============ GLOBAL ESC ============ */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (!menuOverlay.hidden) { closeMenu(); return; }
+      if (!findModal.hidden) { closeFindModal(); return; }
+    }
+  });
 
   /* ============ PREVIEW ============ */
   function renderPreview() {
@@ -2665,17 +3461,17 @@
   currentDevice = safeGet(STORAGE_DEVICE, 'desktop');
   if (['mobile', 'tablet', 'desktop'].indexOf(currentDevice) === -1) currentDevice = 'desktop';
 
-  var deviceChips = document.querySelectorAll('.device-chip');
+  var deviceIcons = document.querySelectorAll('.device-icon');
   function applyDevice(device) {
     currentDevice = device;
     if (previewWrap) previewWrap.setAttribute('data-device', device);
-    for (var k = 0; k < deviceChips.length; k++) {
-      deviceChips[k].classList.toggle('active', deviceChips[k].getAttribute('data-device') === device);
+    for (var k = 0; k < deviceIcons.length; k++) {
+      deviceIcons[k].classList.toggle('active', deviceIcons[k].getAttribute('data-device') === device);
     }
     safeSet(STORAGE_DEVICE, device);
   }
 
-  for (var d = 0; d < deviceChips.length; d++) {
+  for (var d = 0; d < deviceIcons.length; d++) {
     (function(chip) {
       chip.addEventListener('click', function() {
         var dev = chip.getAttribute('data-device');
@@ -2684,7 +3480,7 @@
         var names = { mobile: 'Mobile', tablet: 'Tablet', desktop: 'Desktop' };
         log('Preview: ' + (names[dev] || dev), 'info');
       });
-    })(deviceChips[d]);
+    })(deviceIcons[d]);
   }
   applyDevice(currentDevice);
 
@@ -2800,39 +3596,22 @@
     }
   });
 
-  $('templateSelect').addEventListener('change', function(e) {
-    var key = e.target.value;
-    e.target.value = '';
-    if (!key) return;
-    var tmpl = TEMPLATES[key];
-    if (!tmpl) return;
-    if (!codeArea.value.trim()) {
-      codeArea.value = tmpl;
-    } else {
-      if (!confirm('Ganti seluruh kode dengan template ini?')) return;
-      codeArea.value = tmpl;
-    }
-    saveCode();
-    updateStats();
-    resetMatchNav();
-    updateMatchInfo();
-    resetHistory();
-    var names = { html5: 'HTML5 Boilerplate', form: 'Form', card: 'Card', nav: 'Navbar', button: 'Tombol' };
-    showToast('Template "' + (names[key] || key) + '" dimasukkan', 'success');
-  });
-
   /* ============ SAVE / EXPORT / IMPORT ============ */
   $('saveBtn').addEventListener('click', function() {
     var code = codeArea.value;
     if (!code.trim()) { showToast('Belum ada kode untuk disimpan', 'warn'); return; }
-    var filename = currentFilename;
-    if (!filename) {
-      filename = 'playground-' + makeTimestamp() + '.html';
-      currentFilename = filename;
-      safeSet(STORAGE_FILENAME, filename);
-      updateFilenameUI();
-    }
-    shareOrDownload(filename, code, 'text/html;charset=utf-8');
+
+    var defaultName = currentFilename || ('playground-' + makeTimestamp() + '.html');
+    var name = prompt('Simpan sebagai (nama file):', defaultName);
+    if (name === null) return;
+    name = name.trim();
+    if (!name) { showToast('Nama file kosong — dibatalkan', 'warn'); return; }
+    if (!/\.html?$/i.test(name)) name += '.html';
+
+    currentFilename = name;
+    safeSet(STORAGE_FILENAME, name);
+    updateFilenameUI();
+    shareOrDownload(name, code, 'text/html;charset=utf-8');
   });
 
   $('saveAsBtn').addEventListener('click', function() {
@@ -2840,7 +3619,7 @@
     if (!code.trim()) { showToast('Belum ada kode untuk disimpan', 'warn'); return; }
     var defaultName = currentFilename || ('playground-' + makeTimestamp() + '.html');
     var name = prompt('Simpan sebagai (nama file):', defaultName);
-    if (!name) return;
+    if (name === null) return;
     name = name.trim();
     if (!name) return;
     if (!/\.html?$/i.test(name)) name += '.html';
@@ -2943,13 +3722,11 @@
     analysisBox.innerHTML = html;
   }
 
-  /* ---- AutoLint ---- */
   function autoLintHtml(html) {
     var issues = [];
     var m;
     var voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i;
 
-    // 1. Cek tag berpasangan (abaikan isi <script>, <style>, komentar)
     var cleanHtml = html
       .replace(/<script\b[\s\S]*?<\/script>/gi, '')
       .replace(/<style\b[\s\S]*?<\/style>/gi, '')
@@ -2988,7 +3765,6 @@
       issues.push({ type: 'warn', msg: 'Tag <' + tagStack[kk] + '> tidak ditutup' });
     }
 
-    // 2. Duplicate ID
     var idRe = /\sid\s*=\s*["']([^"']+)["']/gi;
     var ids = {};
     while ((m = idRe.exec(html)) !== null) {
@@ -2997,7 +3773,6 @@
       ids[idVal] = true;
     }
 
-    // 3. <img> tanpa alt
     var imgRe = /<img\b[^>]*>/gi;
     var imgNoAlt = 0;
     while ((m = imgRe.exec(html)) !== null) {
@@ -3005,13 +3780,11 @@
     }
     if (imgNoAlt > 0) issues.push({ type: 'warn', msg: imgNoAlt + ' <img> tanpa atribut alt' });
 
-    // 4. <a> href kosong
     var aRe = /<a\b[^>]*href\s*=\s*["']\s*["'][^>]*>/gi;
     var emptyHref = 0;
     while ((m = aRe.exec(html)) !== null) emptyHref++;
     if (emptyHref > 0) issues.push({ type: 'warn', msg: emptyHref + ' <a> dengan href kosong' });
 
-    // 5. Deprecated
     var depRe = /<(center|font|marquee|blink|frame|frameset|applet|basefont|dir|isindex)\b/gi;
     var depSeen = {};
     while ((m = depRe.exec(html)) !== null) {
@@ -3022,33 +3795,27 @@
       }
     }
 
-    // 6. Inline handler
     var inlineRe = /\son(click|load|error|mouseover|focus|change|submit|input)\s*=/gi;
     var inlineCnt = 0;
     while ((m = inlineRe.exec(html)) !== null) inlineCnt++;
     if (inlineCnt > 0) issues.push({ type: 'info', msg: inlineCnt + ' inline event handler (pertimbangkan addEventListener)' });
 
-    // 7. DOCTYPE
     if (html.trim().length > 0 && !/^\s*<!DOCTYPE/i.test(html)) {
       issues.push({ type: 'warn', msg: 'Tidak ada <!DOCTYPE html>' });
     }
 
-    // 8. lang
     if (/<html\b[^>]*>/i.test(html) && !/<html\b[^>]*\blang\s*=/i.test(html)) {
       issues.push({ type: 'info', msg: '<html> tanpa atribut lang' });
     }
 
-    // 9. viewport
     if (/<head\b/i.test(html) && !/<meta\b[^>]*name\s*=\s*["']viewport["']/i.test(html)) {
       issues.push({ type: 'info', msg: 'Tidak ada meta viewport' });
     }
 
-    // 10. charset
     if (/<head\b/i.test(html) && !/<meta\b[^>]*charset/i.test(html)) {
       issues.push({ type: 'info', msg: 'Tidak ada meta charset' });
     }
 
-    // 11. Empty src
     var emptySrcRe = /<(img|script|iframe|source)\b[^>]*src\s*=\s*["']\s*["']/gi;
     var emptySrc = 0;
     while ((m = emptySrcRe.exec(html)) !== null) emptySrc++;
@@ -3092,7 +3859,6 @@
     }
   });
 
-  /* ---- Clean ---- */
   function cleanHtml(html) {
     var result = html;
     result = result.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
@@ -3122,7 +3888,6 @@
     ]);
   });
 
-  /* ---- Beautify ---- */
   function repeatIndent(n) {
     var s = '';
     for (var i = 0; i < n; i++) s += '  ';
@@ -3130,7 +3895,6 @@
   }
 
   function beautifyHtml(html) {
-    var indentSize = 2;
     var output = '';
     var depth = 0;
     var voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i;
@@ -3236,7 +4000,6 @@
     }
   });
 
-  /* ---- Minify ---- */
   function minifyHtml(html) {
     var placeholders = [];
     var protected_ = html.replace(/<(pre|textarea|script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, function(m) {
@@ -3281,7 +4044,6 @@
     }
   });
 
-  /* ---- Stats ---- */
   $('statsBtn').addEventListener('click', function() {
     var code = toolsCodeArea.value || codeArea.value;
     if (!code.trim()) { showToast('Kode masih kosong', 'warn'); return; }
@@ -3317,7 +4079,6 @@
     showToast('📊 Stats: ' + lines + ' baris · ' + formatSize(bytes), 'info', 3000);
   });
 
-  /* ---- Reset Tools ---- */
   $('resetToolsBtn').addEventListener('click', function() {
     if (!codeArea.value.trim()) { showToast('Editor utama kosong', 'warn'); return; }
     if (!confirm('Muat ulang kode dari editor utama?\nPerubahan di kotak ini akan hilang.')) return;
@@ -3329,7 +4090,6 @@
     log('Tools: kode direset dari editor utama', 'info');
   });
 
-  /* ---- Load from Editor ---- */
   $('loadFromEditorBtn').addEventListener('click', function() {
     if (!codeArea.value.trim()) { showToast('Editor utama kosong', 'warn'); return; }
     toolsCodeArea.value = codeArea.value;
@@ -3339,7 +4099,6 @@
     log('Tools: kode dimuat dari editor utama', 'info');
   });
 
-  /* ---- Push to Editor ---- */
   $('pushToEditorBtn').addEventListener('click', function() {
     if (!toolsCodeArea.value.trim()) { showToast('Kotak alat kosong', 'warn'); return; }
     if (!confirm('Kirim kode dari kotak alat ke editor utama?\nKode editor utama akan ditimpa.')) return;
@@ -3353,7 +4112,6 @@
     log('Tools: kode dikirim ke editor utama', 'success');
   });
 
-  /* ---- Paste Tools ---- */
   $('pasteToolsBtn').addEventListener('click', function() {
     if (navigator.clipboard && navigator.clipboard.readText) {
       navigator.clipboard.readText().then(function(text) {
@@ -3373,7 +4131,6 @@
     }
   });
 
-  /* ---- Clear Tools ---- */
   $('clearToolsBtn').addEventListener('click', function() {
     if (!toolsCodeArea.value) { showToast('Kotak alat sudah kosong', 'info'); return; }
     if (confirm('Hapus semua kode di kotak alat?')) {
@@ -3386,7 +4143,6 @@
     }
   });
 
-  /* ---- Copy Tools Code ---- */
   $('copyToolsBtn').addEventListener('click', function() {
     var code = toolsCodeArea.value;
     if (!code) { showToast('Kotak alat kosong', 'warn'); return; }
@@ -3400,6 +4156,7 @@
   setSaveStatus('saved');
   updateMatchInfo();
   renderAnalysisEmpty();
+  switchTab('home');
 
 })();
 </script>
