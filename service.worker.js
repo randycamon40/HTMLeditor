@@ -1,4 +1,4 @@
-const CACHE_NAME = 'htmleditor-v5.2';
+const CACHE_NAME = 'htmleditor-v5.5';
 const ASSETS = [
   './',
   './index.html',
