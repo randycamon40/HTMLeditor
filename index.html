@@ -21,6 +21,109 @@
 :where(code, pre, kbd, samp) {
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
+</style><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+
+  /* ===== BatchReplace Panel - simple & clean ===== */
+  #panel-batchreplace { padding: 16px; }
+  #panel-batchreplace:not([hidden]) { display: flex; flex-direction: column; gap: 12px; }
+  .br-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .br-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+  .br-title svg { width: 18px; height: 18px; color: var(--accent); }
+  .br-sub { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+  .br-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .br-textarea {
+    width: 100%; min-height: 220px; max-height: 42vh;
+    padding: 12px;
+    background: var(--panel-3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 12.5px; line-height: 1.5;
+    resize: vertical; outline: none;
+    white-space: pre; overflow: auto;
+  }
+  .br-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.18); }
+  .br-actions { display: flex; gap: 8px; align-items: center; }
+  .br-btn {
+    height: 36px; padding: 0 12px; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--text);
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.12s;
+  }
+  .br-btn:active { transform: scale(0.97); }
+  .br-btn.primary { flex: 1; background: var(--accent); color: white; border-color: var(--accent); font-weight: 700; box-shadow: 0 4px 12px rgba(99,102,241,0.28); }
+  .br-btn.icon-only { width: 40px; padding: 0; font-size: 16px; }
+  .br-status {
+    padding: 8px 12px; border-radius: 10px; text-align: center;
+    font-size: 12px; font-weight: 500;
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--muted);
+  }
+  .br-status.error { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+  .br-status.empty { color: var(--muted); }
+  .br-detail {
+    display: none; max-height: 200px; overflow-y: auto;
+    background: var(--panel-3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 6px;
+  }
+  .br-detail.show { display: block; }
+  .br-help { font-size: 11px; color: var(--muted); background: var(--panel-2); border: 1px dashed var(--border); border-radius: 10px; padding: 10px 12px; line-height: 1.5; }
+  .br-help code { background: var(--panel-3); padding: 1px 5px; border-radius: 5px; font-size: 11px; }
+
+
+  /* Edit toggle - locked mode */
+  #codeArea[readonly] {
+    opacity: 0.85;
+    background: var(--panel-3);
+    cursor: not-allowed;
+  }
+  #editToggleBtn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent) !important;
+  }
+  #editToggleBtn.active svg { color: white; }
+
+
+  #keyboardToggleBtn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent) !important;
+  }
+  #keyboardToggleBtn.active svg { color: white; }
+  /* Pastikan input lain (batch, find) tidak kena readonly */
+  #batchInput, #navBatchInput, #findInput, #replaceInput, #batchReplaceRules {
+    -webkit-user-modify: read-write;
+  }
+
 </style>
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
@@ -528,7 +631,7 @@
     align-self: stretch;
     margin: 0;
   }
-  /* === MOBILE 20:9 with bold border, no scrollbar === */
+    /* === MOBILE 20:9 with border top/bottom = tablet (10px), sides thinner to keep 20:9 === */
   .preview-frame-wrap[data-device="mobile"] {
     width: 360px; /* 20:9 base width */
     min-width: 360px; max-width: 360px;
@@ -538,7 +641,9 @@
     margin: auto;
     background: white;
     border-radius: 32px;
-    border: 12px solid #0a0c14;
+    border-style: solid;
+    border-color: #0a0c14;
+    border-width: 10px 5px; /* atas/bawah = tablet, kiri/kanan mobile kecil */ /* atas/bawah = tablet 10px, kiri/kanan mobile lebih kecil */ /* top/bottom = tablet (10px), left/right dikecilkan biar tetap 20:9 */
     box-shadow: 0 30px 90px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset;
     overflow: hidden;
     align-self: center;
@@ -582,13 +687,13 @@
       aspect-ratio: 9 / 20;
       height: auto;
       max-height: calc(100dvh - 100px);
-      border-width: 10px;
+      border-width: 8px 4px; /* atas/bawah = tablet 8px */ /* top/bottom = tablet 8px */
       border-radius: 28px;
     }
     .preview-frame-wrap[data-device="tablet"] {
       width: 100%; max-width: 100%;
       height: 100%; max-height: 100%;
-      border-width: 8px;
+      border-width: 8px 4px; /* atas/bawah = tablet, kiri/kanan mobile lebih kecil */ /* top/bottom = tablet, sides thinner */
       border-radius: 18px;
     }
   }
@@ -597,7 +702,7 @@
     .preview-frame-wrap[data-device="mobile"] {
       max-width: calc(100vw - 16px);
       width: calc(100vw - 16px);
-      border-width: 8px;
+      border-width: 8px 4px; /* atas/bawah = tablet, kiri/kanan mobile lebih kecil */ /* top/bottom = tablet, sides thinner */
       border-radius: 24px;
       aspect-ratio: 9 / 20;
     }
@@ -1609,11 +1714,11 @@
     <div class="brand-logo">&lt;/&gt;</div>
     <div class="brand-text">
       <span>Playground</span>
-      <span class="brand-sub">By Randy CreativeTech</span>
+      <span class="brand-sub">by Randy CreativeTech</span>
     </div>
   </div>
   <div class="header-actions">
-    <button class="prompt-btn" id="promptBtn" title="Prompt Find & Replace">🤖</button>
+    <button class="prompt-btn" id="promptBtn" title="Prompt Find & Replace">Ai</button>
 <button class="prompt-btn" id="promptBatchBtn" title="Prompt Batch Replace">⚡</button>
     <button class="icon-btn" id="themeBtn" title="Ganti tema">
       <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
@@ -1640,6 +1745,20 @@
         <div class="code-title">
           <span>Kode</span>
           <span class="code-stats" id="stats">0 baris · 0 karakter</span>
+          <button class="mini-btn" id="keyboardToggleBtn" title="Keyboard on/off - tampilkan/sembunyikan keyboard fisik" style="min-width:30px;height:26px;padding:0 6px;border:1px solid var(--border);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path>
+            </svg>
+            <span id="keyboardToggleLabel" style="font-size:10px;margin-left:3px;font-weight:700">ON</span>
+          </button>
+          <button class="mini-btn" id="editToggleBtn" title="Edit on/off - kunci/buka edit HTML" style="margin-left:auto;min-width:30px;height:26px;padding:0 6px;border:1px solid var(--border);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span id="editToggleLabel" style="font-size:10px;margin-left:3px;font-weight:700">OFF</span>
+          </button>
           <button class="mini-btn" id="undoBtn" title="Undo" disabled style="margin-left:auto;min-width:26px;height:26px;padding:0 4px">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
               <polyline points="1 4 1 10 7 10"></polyline>
@@ -1716,7 +1835,7 @@
         <span class="live-dot"></span>
         <span>Live Preview</span>
         <div class="device-icons">
-          <button class="device-icon" data-device="mobile" title="Mobile">
+          <button class="device-icon active" data-device="mobile" title="Mobile">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="7" y="2" width="10" height="20" rx="2"></rect>
               <line x1="12" y1="18" x2="12" y2="18.01"></line>
@@ -1728,7 +1847,7 @@
               <line x1="12" y1="18" x2="12" y2="18.01"></line>
             </svg>
           </button>
-          <button class="device-icon active" data-device="desktop" title="Desktop">
+          <button class="device-icon" data-device="desktop" title="Desktop">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -1887,7 +2006,53 @@
   </section>
 
   <!-- ============ TOOLS ============ -->
-  <section class="tab-panel" id="panel-tools" hidden>
+  <section class="tab-panel" id="panel-batchreplace" hidden>
+    <div class="br-header">
+      <div class="br-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="13 2 3 14 12 14 11 22 21 10 12 10"></polyline>
+      </svg>
+        Batch Replace
+      </div>
+    </div>
+    <div class="br-sub">Paste hasil AI format <code>CARI:</code> dan <code>GANTI DENGAN:</code>. Bisa banyak blok sekaligus, pisah dengan <code>---</code>.</div>
+
+    <div class="br-card">
+      <textarea id="navBatchInput" class="br-textarea" placeholder="Paste di sini — contoh:
+
+CARI:
+<div class=&quot;old&quot;>
+
+GANTI DENGAN:
+<div class=&quot;new&quot;>
+
+---
+CARI:
+teks lama
+
+GANTI DENGAN:
+teks baru"></textarea>
+
+      <div class="br-actions">
+        <button class="br-btn" id="navBatchPasteBtn" type="button" title="Paste">📋 Paste</button>
+        <button class="br-btn" id="navBatchPreviewBtn" type="button" title="Cek">🔍 Cek</button>
+        <button class="br-btn primary" id="navBatchApplyBtn" type="button" title="Terapkan">⚡ Terapkan</button>
+        <button class="br-btn icon-only" id="navBatchClearBtn" type="button" title="Hapus">🗑</button>
+      </div>
+
+      <div class="br-status empty" id="navBatchStatus">—</div>
+      <div class="br-detail" id="navBatchDetail"></div>
+    </div>
+
+    <div class="br-help">
+      <b>Tips:</b> Format wajib AI —<br>
+      • Tiap blok: <code>CARI:</code> → isi, lalu <code>GANTI DENGAN:</code> → isi<br>
+      • Pisah blok dengan <code>---</code><br>
+      • Cek dulu → Terapkan
+    </div>
+  </section>
+
+<section class="tab-panel" id="panel-tools" hidden>
 
     <div class="section-label">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -2057,6 +2222,12 @@
       </svg>
     </button>
 
+    <button class="menu-item" data-tab="batchreplace" type="button" role="menuitem" title="Batch Replace" aria-label="Batch Replace">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="13 2 3 14 12 14 11 22 21 10 12 10"></polyline>
+      </svg>
+    </button>
+
     <button class="menu-item" data-tab="tools" type="button" role="menuitem" title="Alat" aria-label="Alat">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
@@ -2147,11 +2318,11 @@
 
     <textarea id="batchInput" placeholder="Paste hasil AI di sini — format:&#10;&#10;CARI:&#10;[teks asli]&#10;&#10;GANTI DENGAN:&#10;[teks pengganti]&#10;&#10;Bisa banyak blok sekaligus, dipisah ---" style="width:100%;height:200px;min-height:120px;padding:12px;background:var(--panel-3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',Consolas,monospace;font-size:12.5px;line-height:1.5;resize:vertical;outline:none;display:block;-webkit-appearance:none;margin-bottom:8px;white-space:pre;word-wrap:normal;overflow:auto"></textarea>
 
-    <div style="display:flex;gap:6px;margin-bottom:8px">
-      <button class="find-modal-nav-btn" id="batchClearBtn" type="button" title="Kosongkan input" style="flex:0 0 auto;width:auto;padding:0 12px;font-size:12px;font-weight:600">🗑</button>
-<button class="find-modal-nav-btn" id="batchPasteBtn" type="button" title="Paste dari clipboard" style="flex:0 0 auto;width:auto;padding:0 12px;font-size:12px;font-weight:600">📋</button>
+    <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+      <button class="find-modal-nav-btn" id="batchPasteBtn" type="button" title="Paste dari clipboard" style="flex:0 0 auto;width:auto;padding:0 12px;font-size:12px;font-weight:600">📋 Paste</button>
       <button class="find-modal-nav-btn" id="batchPreviewBtn" type="button" title="Cek jumlah blok" style="flex:0 0 auto;width:auto;padding:0 12px;font-size:12px;font-weight:600">🔍 Cek</button>
       <button class="find-modal-nav-btn" id="batchApplyBtn" type="button" title="Terapkan semua" style="flex:1;background:var(--accent);color:white;border-color:var(--accent);font-size:12.5px;font-weight:700">⚡ Terapkan</button>
+      <button class="find-modal-nav-btn" id="batchClearBtn" type="button" title="Kosongkan input" style="flex:0 0 auto;width:40px;padding:0;font-size:14px;font-weight:600">🗑</button>
     </div>
 
     <div class="find-modal-counter empty" id="batchStatus" style="display:block;width:100%;padding:8px 12px;text-align:center">—</div>
@@ -2387,7 +2558,7 @@ window.addEventListener('unhandledrejection', function(ev) {
   /* var isOnFindTab removed - unused */
   var isOnToolsTab = false;
   var themeMode = 'auto';
-  var currentDevice = 'desktop';
+  var currentDevice = 'mobile';
   var currentMatchIndex = 0;
   var currentTab = 'home';
   var selectAnchor = -1;
@@ -2605,6 +2776,142 @@ var lastRenderedCode = null;
     setEditorFont(cur + 1);
   });
   setEditorFont(getEditorFont());
+
+  
+  /* ============ EDIT TOGGLE - lock/unlock HTML edit ============ */
+  var editToggleBtn = $('editToggleBtn');
+  var editToggleLabel = $('editToggleLabel');
+  var isEditMode = false; // default OFF = tidak bisa edit
+  function applyEditMode(on) {
+    isEditMode = !!on;
+    if (codeArea) {
+      codeArea.readOnly = !isEditMode;
+      codeArea.setAttribute('aria-readonly', String(!isEditMode));
+    }
+    if (editToggleBtn) {
+      editToggleBtn.classList.toggle('active', isEditMode);
+      editToggleBtn.title = isEditMode ? 'Edit ON - bisa edit HTML' : 'Edit OFF - HTML terkunci';
+    }
+    if (editToggleLabel) {
+      editToggleLabel.textContent = isEditMode ? 'ON' : 'OFF';
+    }
+    if (isEditMode) {
+      try { codeArea.focus(); } catch(e) {}
+      showToast('Edit ON - HTML bisa diedit', 'success');
+      log('Edit mode: ON', 'info');
+    } else {
+      showToast('Edit OFF - HTML terkunci', 'info');
+      log('Edit mode: OFF', 'info');
+    }
+    try { safeSet('hp_edit_mode', isEditMode ? '1' : '0'); } catch(e) {}
+  }
+  // init default OFF (locked)
+  (function initEditMode(){
+    var saved = null;
+    try { saved = localStorage.getItem('hp_edit_mode'); } catch(e) {}
+    // default OFF, kecuali user pernah ON sebelumnya
+    if (saved === '1') {
+      applyEditMode(true);
+    } else {
+      applyEditMode(false);
+    }
+  })();
+  if (editToggleBtn) {
+    editToggleBtn.addEventListener('click', function(){
+      applyEditMode(!isEditMode);
+    });
+  }
+
+  
+  /* ============ KEYBOARD TOGGLE - hanya untuk #codeArea, tidak ganggu batch/find ============ */
+  var keyboardToggleBtn = $('keyboardToggleBtn');
+  var keyboardToggleLabel = $('keyboardToggleLabel');
+  var isKeyboardOn = true; // default ON, tapi karena Edit OFF maka keyboard tetap tidak muncul
+  function applyKeyboardMode(on) {
+    isKeyboardOn = !!on;
+    if (!codeArea) return;
+    if (isKeyboardOn) {
+      // kembalikan ke mode text normal - keyboard bisa muncul
+      codeArea.setAttribute('inputmode', 'text');
+      codeArea.removeAttribute('readonly'); // readonly diatur oleh edit mode, jangan di sini
+      // jika edit mode OFF, tetap readonly (keyboard tidak akan muncul meski ON)
+      if (!isEditMode) {
+        codeArea.readOnly = true;
+      }
+    } else {
+      // matikan keyboard - hanya untuk codeArea
+      codeArea.setAttribute('inputmode', 'none');
+      try { codeArea.blur(); } catch(e) {}
+    }
+    if (keyboardToggleBtn) {
+      keyboardToggleBtn.classList.toggle('active', isKeyboardOn);
+      keyboardToggleBtn.title = isKeyboardOn ? 'Keyboard ON - bisa muncul' : 'Keyboard OFF - tidak muncul saat tap';
+    }
+    if (keyboardToggleLabel) {
+      keyboardToggleLabel.textContent = isKeyboardOn ? 'ON' : 'OFF';
+    }
+    try { safeSet('hp_keyboard_mode', isKeyboardOn ? '1' : '0'); } catch(e) {}
+    if (isKeyboardOn) {
+      showToast('Keyboard ON', 'info');
+      log('Keyboard: ON (hanya #codeArea)', 'info');
+    } else {
+      showToast('Keyboard OFF - tap tidak munculkan keyboard', 'info');
+      log('Keyboard: OFF (hanya #codeArea)', 'info');
+    }
+  }
+  (function initKeyboardMode(){
+    var saved = null;
+    try { saved = localStorage.getItem('hp_keyboard_mode'); } catch(e) {}
+    if (saved === '0') {
+      applyKeyboardMode(false);
+    } else {
+      applyKeyboardMode(true);
+    }
+  })();
+  if (keyboardToggleBtn) {
+    keyboardToggleBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      applyKeyboardMode(!isKeyboardOn);
+      // jika keyboard dimatikan dan edit ON, tetap bisa scroll tanpa keyboard
+      if (!isKeyboardOn && isEditMode) {
+        try { codeArea.blur(); } catch(e2) {}
+      }
+    });
+  }
+  // Patch applyEditMode agar tidak ganggu batch/find - hanya codeArea
+  var originalApplyEditMode = applyEditMode;
+  applyEditMode = function(on) {
+    isEditMode = !!on;
+    if (codeArea) {
+      codeArea.readOnly = !isEditMode;
+      codeArea.setAttribute('aria-readonly', String(!isEditMode));
+      // jika edit OFF, paksa blur biar keyboard hilang, tapi hanya codeArea
+      if (!isEditMode) {
+        try { codeArea.blur(); } catch(e) {}
+      } else {
+        // jika edit ON dan keyboard ON, izinkan inputmode text
+        if (isKeyboardOn) {
+          codeArea.setAttribute('inputmode', 'text');
+        }
+      }
+    }
+    if (editToggleBtn) {
+      editToggleBtn.classList.toggle('active', isEditMode);
+      editToggleBtn.title = isEditMode ? 'Edit ON - bisa edit HTML' : 'Edit OFF - HTML terkunci';
+    }
+    if (editToggleLabel) {
+      editToggleLabel.textContent = isEditMode ? 'ON' : 'OFF';
+    }
+    if (isEditMode) {
+      if (isKeyboardOn) { try { codeArea.focus(); } catch(e) {} }
+      showToast('Edit ON - HTML bisa diedit', 'success');
+      log('Edit mode: ON', 'info');
+    } else {
+      showToast('Edit OFF - HTML terkunci', 'info');
+      log('Edit mode: OFF', 'info');
+    }
+    try { safeSet('hp_edit_mode', isEditMode ? '1' : '0'); } catch(e) {}
+  };
 
   /* ============ AI PROMPT ============ */
   $('promptBtn').addEventListener('click', function() {
@@ -3967,8 +4274,8 @@ if (tab === 'tools') {
   });
 
   /* ============ DEVICE PREVIEW ============ */
-  currentDevice = safeGet(STORAGE_DEVICE, 'desktop');
-  if (['mobile', 'tablet', 'desktop'].indexOf(currentDevice) === -1) currentDevice = 'desktop';
+  currentDevice = safeGet(STORAGE_DEVICE, 'mobile');
+  if (['mobile', 'tablet', 'desktop'].indexOf(currentDevice) === -1) currentDevice = 'mobile';
 
   var deviceIcons = document.querySelectorAll('.device-icon');
   function applyDevice(device) {
@@ -4067,14 +4374,22 @@ if (tab === 'tools') {
     if (navigator.clipboard && navigator.clipboard.readText) {
       navigator.clipboard.readText().then(function(text) {
         if (!text) { showToast('Clipboard kosong', 'warn'); return; }
-        codeArea.value = text;
+        // === FIX: hanya paste (insert) di posisi kursor, tidak hapus semua ===
+        var start = codeArea.selectionStart || 0;
+        var end = codeArea.selectionEnd || 0;
+        var before = codeArea.value.substring(0, start);
+        var after = codeArea.value.substring(end);
+        codeArea.value = before + text + after;
+        var newPos = start + text.length;
+        try { codeArea.setSelectionRange(newPos, newPos); } catch(e) {}
         saveCode();
         updateStats();
         resetMatchNav();
         updateMatchInfo();
-        resetHistory();
+        pushHistory();
+        codeArea.focus();
         showToast('Paste ' + text.length + ' karakter', 'success');
-        log('Paste dari clipboard (' + text.length + ' karakter)', 'success');
+        log('Paste dari clipboard (' + text.length + ' karakter) - insert', 'success');
       }).catch(function() {
         codeArea.focus();
         showToast('Clipboard diblokir — tekan lama di kotak kode', 'warn');
@@ -4954,6 +5269,113 @@ var detailEl = $('batchDetail');
 if (detailEl) { detailEl.innerHTML = ''; detailEl.style.display = 'none'; }
 batchInput.focus();
 });
+
+/* ============ NAV BATCH REPLACE (tiru fungsi batch modal) ============ */
+(function(){
+  var navInput = $('navBatchInput');
+  var navStatus = $('navBatchStatus');
+  var navDetail = $('navBatchDetail');
+  var navApply = $('navBatchApplyBtn');
+  var navClear = $('navBatchClearBtn');
+  var navPreview = $('navBatchPreviewBtn');
+  var navPaste = $('navBatchPasteBtn');
+
+  if (!navInput) return;
+
+  function navUpdateStatus(txt, type){
+    if (!navStatus) return;
+    navStatus.textContent = txt;
+    navStatus.className = 'br-status ' + (type || 'empty');
+  }
+
+  function navPreviewFn(){
+    if (!navInput) return;
+    var raw = navInput.value;
+    if (!raw.trim()){ navUpdateStatus('Kosong — paste dulu hasil AI-nya','empty'); if(navDetail){navDetail.innerHTML=''; navDetail.classList.remove('show');} return; }
+    var pairs = parseBatchPairs(raw);
+    if (pairs.length===0){ navUpdateStatus('❌ Tidak ada blok CARI/GANTI','error'); return; }
+    var code = codeArea.value;
+    var complete=0, found=0, notFound=0, incomplete=0;
+    var items=[];
+    for(var i=0;i<pairs.length;i++){
+      var p=pairs[i];
+      var hasFind = typeof p.find==='string' && p.find.length>0;
+      var hasReplace = typeof p.replace==='string';
+      if(hasFind && hasReplace){
+        complete++;
+        if(findAnchor(code, p.find)){ found++; items.push({status:'ok', snippet: p.find.slice(0,80)}); }
+        else { notFound++; items.push({status:'miss', snippet: p.find.slice(0,80)}); }
+      } else { incomplete++; items.push({status:'bad', snippet: (p.find||'').slice(0,80)||'blok kosong'}); }
+    }
+    var msg = pairs.length + ' blok · ' + complete + ' lengkap · ' + found + ' cocok';
+    if(notFound>0) msg+=' · '+notFound+' tidak ketemu';
+    if(incomplete>0) msg+=' · '+incomplete+' tidak lengkap';
+    navUpdateStatus(msg, complete>0 && found>0 ? 'empty' : 'error');
+    if(navDetail){
+      var icons={ok:'✅', miss:'❌', bad:'⚠️'};
+      var colors={ok:'var(--success)', miss:'var(--danger)', bad:'var(--warn)'};
+      var h='';
+      for(var k=0;k<items.length;k++){
+        var it=items[k];
+        h+='<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 8px;border-radius:6px;font-family:monospace;font-size:11px;line-height:1.4;margin-bottom:2px;background:var(--panel-2);border:1px solid var(--border)"><span>'+icons[it.status]+'</span><span style="word-break:break-all;color:'+colors[it.status]+'">'+escapeHtml(it.snippet)+'</span></div>';
+      }
+      navDetail.innerHTML=h;
+      navDetail.classList.add('show');
+    }
+  }
+
+  function navApplyFn(){
+    if(!navInput) return;
+    var raw=navInput.value;
+    if(!raw.trim()){ showToast('Paste dulu hasil AI-nya','warn'); return; }
+    var pairs=parseBatchPairs(raw);
+    if(pairs.length===0){ showToast('Tidak ada blok CARI/GANTI','warn'); navUpdateStatus('❌ Tidak ada blok','error'); return; }
+    var valid=[], invalid=0;
+    for(var i=0;i<pairs.length;i++){ var p=pairs[i]; if(typeof p.find==='string' && p.find.length>0 && typeof p.replace==='string') valid.push(p); else invalid++; }
+    if(valid.length===0){ showToast('Semua blok tidak lengkap','error'); navUpdateStatus('❌ Semua blok tidak lengkap','error'); return; }
+    var confirmMsg='Terapkan '+valid.length+' perubahan ke kode?';
+    if(invalid>0) confirmMsg+='\n\n⚠️ '+invalid+' blok dilewati (tidak lengkap)';
+    if(!confirm(confirmMsg)) return;
+    var text=codeArea.value;
+    var notFound=0, ops=[];
+    for(var j=0;j<valid.length;j++){ var f=valid[j].find; var _m=findAnchor(text,f); if(!_m){ notFound++; continue; } ops.push({start:_m.index, end:_m.index+_m.length, replace: valid[j].replace}); }
+    ops.sort(function(a,b){ return b.start-a.start; });
+    var skipped=0;
+    var appliedText=text;
+    var lastEnd=Infinity;
+    var applied=0;
+    for(var k=0;k<ops.length;k++){ var op=ops[k]; if(op.end>lastEnd){ skipped++; continue; } appliedText = appliedText.slice(0,op.start)+op.replace+appliedText.slice(op.end); lastEnd=op.start; applied++; }
+    if(applied>0){
+      codeArea.value=appliedText;
+      try{ if(typeof updateStats==='function') updateStats(); if(typeof setSaveStatus==='function') setSaveStatus('unsaved'); if(typeof resetHistory==='function') resetHistory(); }catch(e){}
+    }
+    var msg2 = applied+'/'+valid.length+' diterapkan';
+    if(notFound>0) msg2+=' · '+notFound+' tidak ketemu';
+    if(skipped>0) msg2+=' · '+skipped+' overlap';
+    if(invalid>0) msg2+=' · '+invalid+' dilewati';
+    navUpdateStatus(msg2, applied>0 ? 'empty' : 'error');
+    showToast('Batch: '+applied+'/'+valid.length+' berhasil', applied>0?'success':'error', 3500);
+    try{ log('Batch Replace (nav): '+applied+'/'+valid.length+' diterapkan', applied>0?'success':'error'); }catch(e){}
+    navPreviewFn();
+  }
+
+  if(navPreview) navPreview.addEventListener('click', navPreviewFn);
+  if(navApply) navApply.addEventListener('click', navApplyFn);
+  if(navPaste) navPaste.addEventListener('click', function(){
+    if(navigator.clipboard && navigator.clipboard.readText){
+      navigator.clipboard.readText().then(function(t){
+        if(!t){ showToast('Clipboard kosong','warn'); return; }
+        navInput.value=t; navInput.focus(); navPreviewFn(); showToast('Paste '+t.length+' karakter','success');
+      }).catch(function(){ navInput.focus(); showToast('Clipboard diblokir — tekan lama lalu Paste manual','warn'); });
+    } else { navInput.focus(); showToast('Tekan lama di kotak → Paste manual','warn'); }
+  });
+  if(navClear) navClear.addEventListener('click', function(){
+    if(!navInput.value){ showToast('Sudah kosong','info'); return; }
+    navInput.value=''; navUpdateStatus('—','empty'); if(navDetail){ navDetail.innerHTML=''; navDetail.classList.remove('show'); } navInput.focus();
+  });
+  navInput.addEventListener('input', function(){ clearTimeout(navInput._t); navInput._t=setTimeout(navPreviewFn, 600); });
+})();
+
 /* ============ INIT ============ */
 renderLog();
   updateFullscreenIcon();
@@ -4998,5 +5420,5 @@ nav.style.display = 'none';
 
 })();
 </script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script><script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
