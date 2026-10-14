@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
+<head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style>
 <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -485,28 +506,101 @@
   .preview-stage {
     flex: 1; display: flex; overflow: hidden;
     background: var(--panel-3); min-height: 0; padding: 0;
+    justify-content: center; align-items: center;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
   }
   .preview-frame-wrap {
-    flex: 1; max-width: 100%; margin: 0 auto;
+    flex: 0 0 auto;
+    width: 100%; max-width: 100%;
+    height: 100%; min-height: 0;
+    margin: 0;
     background: white;
-    transition: max-width 0.3s ease;
-    display: flex; min-height: 0;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    display: flex; 
     position: relative; overflow: hidden;
+    box-sizing: border-box;
   }
+  .preview-frame-wrap[data-device="desktop"] {
+    width: 100%; max-width: 100%;
+    height: 100%; min-height: 100%;
+    border: none; border-radius: 0; box-shadow: none;
+    align-self: stretch;
+    margin: 0;
+  }
+  /* === MOBILE 20:9 with bold border, no scrollbar === */
   .preview-frame-wrap[data-device="mobile"] {
-    max-width: 390px;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
+    width: 360px; /* 20:9 base width */
+    min-width: 360px; max-width: 360px;
+    aspect-ratio: 9 / 20; /* 20:9 portrait */
+    height: auto;
+    max-height: calc(100% - 24px);
+    margin: auto;
+    background: white;
+    border-radius: 32px;
+    border: 12px solid #0a0c14;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    overflow: hidden;
+    align-self: center;
+    box-sizing: border-box;
   }
   .preview-frame-wrap[data-device="tablet"] {
-    max-width: 820px;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
+    width: 820px; min-width: 0; max-width: calc(100% - 24px);
+    height: calc(100% - 24px); min-height: 0; max-height: 1024px;
+    margin: auto;
+    background: white;
+    border-radius: 24px;
+    border: 10px solid #0a0c14;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    overflow: hidden;
+    align-self: center;
+    box-sizing: border-box;
   }
   #previewFrame {
     flex: 1; width: 100%; height: 100%;
     border: none; background: white;
     display: block; min-height: 0;
+    overflow: auto;
+    /* HIDE SCROLLBAR COMPLETELY */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  #previewFrame::-webkit-scrollbar { 
+    display: none; width: 0; height: 0; /* Chrome/Safari */
+  }
+  /* Also hide scrollbar inside the iframe content via injected style */
+  .preview-frame-wrap[data-device="mobile"] #previewFrame,
+  .preview-frame-wrap[data-device="tablet"] #previewFrame {
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  @media (max-width: 900px) {
+    .preview-stage { padding: 12px; }
+    .preview-frame-wrap[data-device="mobile"] {
+      width: 100%; min-width: 0; max-width: 360px;
+      aspect-ratio: 9 / 20;
+      height: auto;
+      max-height: calc(100dvh - 100px);
+      border-width: 10px;
+      border-radius: 28px;
+    }
+    .preview-frame-wrap[data-device="tablet"] {
+      width: 100%; max-width: 100%;
+      height: 100%; max-height: 100%;
+      border-width: 8px;
+      border-radius: 18px;
+    }
+  }
+  @media (max-width: 480px) {
+    .preview-stage { padding: 8px; }
+    .preview-frame-wrap[data-device="mobile"] {
+      max-width: calc(100vw - 16px);
+      width: calc(100vw - 16px);
+      border-width: 8px;
+      border-radius: 24px;
+      aspect-ratio: 9 / 20;
+    }
   }
 
   body.preview-fs .app-header { display: none; }
@@ -1514,8 +1608,8 @@
   <div class="brand">
     <div class="brand-logo">&lt;/&gt;</div>
     <div class="brand-text">
-      <span>HTML Playground</span>
-      <span class="brand-sub">Editor & Preview</span>
+      <span>Playground</span>
+      <span class="brand-sub">By Randy CreativeTech</span>
     </div>
   </div>
   <div class="header-actions">
@@ -3842,7 +3936,19 @@ if (tab === 'tools') {
   /* ============ PREVIEW ============ */
   function renderPreview() {
     var code = codeArea.value.trim();
-    previewFrame.srcdoc = code ? code : EMPTY_PREVIEW;
+    var htmlCode = code ? code : EMPTY_PREVIEW;
+    // Inject style to hide scrollbar inside iframe content
+    try {
+      var hideScrollStyle = '<style>html{scrollbar-width:none;-ms-overflow-style:none;}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none;width:0;height:0;}body{overflow:auto;}</style>';
+      if (htmlCode.indexOf('</head>') !== -1) {
+        htmlCode = htmlCode.replace('</head>', hideScrollStyle + '</head>');
+      } else if (htmlCode.indexOf('<head>') !== -1) {
+        htmlCode = htmlCode.replace('<head>', '<head>' + hideScrollStyle);
+      } else {
+        htmlCode = hideScrollStyle + htmlCode;
+      }
+    } catch(e) {}
+    previewFrame.srcdoc = htmlCode;
   }
 
   $('refreshBtn').addEventListener('click', function() {
@@ -4892,5 +4998,5 @@ nav.style.display = 'none';
 
 })();
 </script>
-</body>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
