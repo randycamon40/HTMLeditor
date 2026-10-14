@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f1117" id="metaTheme">
+<title>HTML Playground</title>
 <style>
 @font-face {
   font-family: "Optimistic";
@@ -106,10 +110,6 @@
 
 </style>
 <link rel="manifest" href="manifest.json">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0f1117" id="metaTheme">
-<title>HTML Playground</title>
 <script>
 (function() {
   try {
@@ -2271,6 +2271,11 @@ teks baru"></textarea>
       <div class="analysis-empty">Hasil analisis akan muncul di sini.<br>Tap <b>AutoLint</b> untuk memulai.</div>
     </div>
 
+  </section>
+
+  <!-- ============ LOG ============ -->
+  <section class="tab-panel" id="panel-log" hidden>
+    <!-- ================= MULAI DIPINDAHKAN DARI TAB TOOLS ================= -->
     <div class="section-label">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -2317,15 +2322,37 @@ teks baru"></textarea>
     </button>
     <input type="file" id="jsonInput" accept=".json,application/json" hidden>
 
+    <!-- === FOLDER PILIHAN CUSTOM - HANYA TAMBAHAN LOKASI SIMPAN === -->
+    <div class="section-label" style="margin-top:14px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+      Lokasi Simpan Custom
+    </div>
+    <div class="actions-row">
+      <button class="btn small" id="pickFolderBtn" title="Pilih folder /sdcard/projek">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Pilih Folder
+      </button>
+      <button class="btn small" id="forgetFolderBtn" title="Hapus folder tersimpan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Lupa
+      </button>
+    </div>
+    <div class="hint" id="folderStatus" style="margin-top:6px; word-break:break-all">Belum pilih folder. Default: /sdcard/Download</div>
+    <!-- === END FOLDER PILIHAN === -->
+
     <div class="hint">
       💡 Backup berisi kode + setting + tema.<br>Simpan ke Drive biar aman kalau ganti HP.
     </div>
+    <!-- ================= SELESAI DIPINDAHKAN ================= -->
 
-  </section>
-
-  <!-- ============ LOG ============ -->
-  <section class="tab-panel" id="panel-log" hidden>
-    <div class="section-label">
+    <div class="section-label" style="margin-top: 20px;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="8" y1="6" x2="21" y2="6"></line>
         <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -2486,14 +2513,10 @@ teks baru"></textarea>
 
 <script>
 window.addEventListener('error', function(ev) {
-  try {
-    alert('❌ JS ERROR\n\n' + (ev.message || '?') + '\n\nDi baris: ' + (ev.lineno || '?') + '\nFile: ' + (ev.filename || 'inline').split('/').pop());
-  } catch (e) {}
+  console.error('JS ERROR:', ev.message, 'Line:', ev.lineno, 'File:', ev.filename);
 });
 window.addEventListener('unhandledrejection', function(ev) {
-  try {
-    alert('❌ PROMISE ERROR\n\n' + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason));
-  } catch (e) {}
+  console.error('PROMISE ERROR:', ev.reason);
 });
 (function() {
   'use strict';
@@ -2709,7 +2732,6 @@ window.addEventListener('unhandledrejection', function(ev) {
 
   var currentFilename = '';
   var logEntries = [];
-  /* var isOnFindTab removed - unused */
   var isOnToolsTab = false;
   var themeMode = 'auto';
   var currentDevice = 'mobile';
@@ -2975,6 +2997,13 @@ var lastRenderedCode = null;
     if (codeArea) {
       codeArea.readOnly = !isEditMode;
       codeArea.setAttribute('aria-readonly', String(!isEditMode));
+      if (!isEditMode) {
+        try { codeArea.blur(); } catch(e) {}
+      } else {
+        if (isKeyboardOn) {
+          codeArea.setAttribute('inputmode', 'text');
+        }
+      }
     }
     if (editToggleBtn) {
       editToggleBtn.classList.toggle('active', isEditMode);
@@ -2984,7 +3013,7 @@ var lastRenderedCode = null;
       editToggleLabel.textContent = isEditMode ? 'ON' : 'OFF';
     }
     if (isEditMode) {
-      try { codeArea.focus(); } catch(e) {}
+      if (isKeyboardOn) { try { codeArea.focus(); } catch(e) {} }
       showToast('Edit ON - HTML bisa diedit', 'success');
       log('Edit mode: ON', 'info');
     } else {
@@ -3019,15 +3048,12 @@ var lastRenderedCode = null;
     isKeyboardOn = !!on;
     if (!codeArea) return;
     if (isKeyboardOn) {
-      // kembalikan ke mode text normal - keyboard bisa muncul
       codeArea.setAttribute('inputmode', 'text');
-      codeArea.removeAttribute('readonly'); // readonly diatur oleh edit mode, jangan di sini
-      // jika edit mode OFF, tetap readonly (keyboard tidak akan muncul meski ON)
+      codeArea.removeAttribute('readonly');
       if (!isEditMode) {
         codeArea.readOnly = true;
       }
     } else {
-      // matikan keyboard - hanya untuk codeArea
       codeArea.setAttribute('inputmode', 'none');
       try { codeArea.blur(); } catch(e) {}
     }
@@ -3060,45 +3086,11 @@ var lastRenderedCode = null;
     keyboardToggleBtn.addEventListener('click', function(e){
       e.stopPropagation();
       applyKeyboardMode(!isKeyboardOn);
-      // jika keyboard dimatikan dan edit ON, tetap bisa scroll tanpa keyboard
       if (!isKeyboardOn && isEditMode) {
         try { codeArea.blur(); } catch(e2) {}
       }
     });
   }
-  // Patch applyEditMode agar tidak ganggu batch/find - hanya codeArea
-  applyEditMode = function(on) {
-    isEditMode = !!on;
-    if (codeArea) {
-      codeArea.readOnly = !isEditMode;
-      codeArea.setAttribute('aria-readonly', String(!isEditMode));
-      // jika edit OFF, paksa blur biar keyboard hilang, tapi hanya codeArea
-      if (!isEditMode) {
-        try { codeArea.blur(); } catch(e) {}
-      } else {
-        // jika edit ON dan keyboard ON, izinkan inputmode text
-        if (isKeyboardOn) {
-          codeArea.setAttribute('inputmode', 'text');
-        }
-      }
-    }
-    if (editToggleBtn) {
-      editToggleBtn.classList.toggle('active', isEditMode);
-      editToggleBtn.title = isEditMode ? 'Edit ON - bisa edit HTML' : 'Edit OFF - HTML terkunci';
-    }
-    if (editToggleLabel) {
-      editToggleLabel.textContent = isEditMode ? 'ON' : 'OFF';
-    }
-    if (isEditMode) {
-      if (isKeyboardOn) { try { codeArea.focus(); } catch(e) {} }
-      showToast('Edit ON - HTML bisa diedit', 'success');
-      log('Edit mode: ON', 'info');
-    } else {
-      showToast('Edit OFF - HTML terkunci', 'info');
-      log('Edit mode: OFF', 'info');
-    }
-    try { safeSet('hp_edit_mode', isEditMode ? '1' : '0'); } catch(e) {}
-  };
 
   /* ============ AI PROMPT ============ */
   $('promptBtn').addEventListener('click', function() {
@@ -4210,7 +4202,6 @@ codeArea.focus();
     if (typeof updateSelectToggleUI === 'function') updateSelectToggleUI();
   }
   currentTab = tab;
-  /* isOnFindTab removed - unused */
     isOnToolsTab = (tab === 'tools');
 
     for (var j = 0; j < panels.length; j++) {
@@ -4487,50 +4478,172 @@ if (tab === 'tools') {
   }
   applyDevice(currentDevice);
 
-  /* ============ SHARE / DOWNLOAD ============ */
+  /* ============ CUSTOM FOLDER STORAGE - IndexedDB (HANYA TAMBAHAN LOKASI) ============ */
+  var CUSTOM_FOLDER_DB = 'hp_custom_folder_db';
+  var CUSTOM_FOLDER_STORE = 'handles';
+  var CUSTOM_FOLDER_KEY = 'projek_folder_handle';
+  function idbOpenCustomFolder() {
+    return new Promise(function(resolve, reject){
+      var req = indexedDB.open(CUSTOM_FOLDER_DB, 1);
+      req.onupgradeneeded = function(){ req.result.createObjectStore(CUSTOM_FOLDER_STORE); };
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(){ reject(req.error); };
+    });
+  }
+  function idbGetCustomFolder() {
+    return idbOpenCustomFolder().then(function(db){
+      return new Promise(function(res, rej){
+        var tx = db.transaction(CUSTOM_FOLDER_STORE, 'readonly');
+        var store = tx.objectStore(CUSTOM_FOLDER_STORE);
+        var r = store.get(CUSTOM_FOLDER_KEY);
+        r.onsuccess = function(){ res(r.result || null); try{db.close();}catch(e){} };
+        r.onerror = function(){ rej(r.error); try{db.close();}catch(e){} };
+      });
+    });
+  }
+  function idbSetCustomFolder(handle) {
+    return idbOpenCustomFolder().then(function(db){
+      return new Promise(function(res, rej){
+        var tx = db.transaction(CUSTOM_FOLDER_STORE, 'readwrite');
+        tx.objectStore(CUSTOM_FOLDER_STORE).put(handle, CUSTOM_FOLDER_KEY);
+        tx.oncomplete = function(){ res(); try{db.close();}catch(e){} };
+        tx.onerror = function(){ rej(tx.error); try{db.close();}catch(e){} };
+      });
+    });
+  }
+  function idbDeleteCustomFolder() {
+    return idbOpenCustomFolder().then(function(db){
+      return new Promise(function(res, rej){
+        var tx = db.transaction(CUSTOM_FOLDER_STORE, 'readwrite');
+        tx.objectStore(CUSTOM_FOLDER_STORE).delete(CUSTOM_FOLDER_KEY);
+        tx.oncomplete = function(){ res(); try{db.close();}catch(e){} };
+        tx.onerror = function(){ rej(tx.error); try{db.close();}catch(e){} };
+      });
+    });
+  }
+  async function getCustomDirHandleWithPerm() {
+    try {
+      var handle = await idbGetCustomFolder();
+      if (!handle) return null;
+      var q = await handle.queryPermission({mode:'readwrite'});
+      if (q === 'granted') return handle;
+      if (q === 'prompt') {
+        var r = await handle.requestPermission({mode:'readwrite'});
+        if (r === 'granted') return handle;
+      }
+      return null;
+    } catch(e){ return null; }
+  }
+  async function updateFolderStatusUI() {
+    var el = document.getElementById('folderStatus');
+    if (!el) return;
+    try {
+      var h = await idbGetCustomFolder();
+      if (h && h.name) {
+        var perm = await h.queryPermission({mode:'readwrite'}).catch(function(){return 'unknown';});
+        el.textContent = 'Folder aktif: ' + h.name + ' (' + perm + ') - Save akan ke sini, bukan Download';
+      } else {
+        el.textContent = 'Belum pilih folder. Default: /sdcard/Download';
+      }
+    } catch(e){
+      el.textContent = 'Belum pilih folder. Default: /sdcard/Download';
+    }
+  }
+  async function saveBlobToCustomFolder(blob, filename) {
+    try {
+      var dirHandle = await getCustomDirHandleWithPerm();
+      if (!dirHandle) return false;
+      var fileHandle = await dirHandle.getFileHandle(filename, {create:true});
+      var writable = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      showToast('Tersimpan ke folder: ' + dirHandle.name + '/' + filename, 'success');
+      log('Tersimpan ke custom folder "' + dirHandle.name + '/' + filename + '"', 'success');
+      return true;
+    } catch(e){
+      console.warn('save to custom folder failed', e);
+      return false;
+    }
+  }
+
+  /* ============ SHARE / DOWNLOAD (DIMODIFIKASI HANYA UNTUK DUKUNG CUSTOM FOLDER) ============ */
   function shareOrDownload(filename, content, mimeType) {
     var mime = mimeType || 'text/plain;charset=utf-8';
     var blob;
     try { blob = new Blob([content], { type: mime }); }
     catch (e) { showToast('Gagal membuat file', 'error'); return; }
-
-    if (navigator.canShare && navigator.share) {
+    saveBlobToCustomFolder(blob, filename).then(function(ok){
+      if (ok) return;
+      if (navigator.canShare && navigator.share) {
+        try {
+          var file = new File([blob], filename, { type: mime });
+          if (navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: filename }).then(function() {
+              showToast('File "' + filename + '" disimpan', 'success');
+              log('File "' + filename + '" disimpan', 'success');
+            }).catch(function(err) {
+              if (err && err.name === 'AbortError') { log('Dibatalkan user', 'warn'); return; }
+              fallbackDownload(blob, filename);
+            });
+            return;
+          }
+        } catch (e) {}
+      }
+      fallbackDownload(blob, filename);
+    });
+  }
+  function fallbackDownload(blob, filename) {
+    saveBlobToCustomFolder(blob, filename).then(function(ok){
+      if (ok) return;
       try {
-        var file = new File([blob], filename, { type: mime });
-        if (navigator.canShare({ files: [file] })) {
-          navigator.share({ files: [file], title: filename }).then(function() {
-            showToast('File "' + filename + '" disimpan', 'success');
-            log('File "' + filename + '" disimpan', 'success');
-          }).catch(function(err) {
-            if (err && err.name === 'AbortError') { log('Dibatalkan user', 'warn'); return; }
-            fallbackDownload(blob, filename);
-          });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+          if (a.parentNode) a.parentNode.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 150);
+        showToast('Download "' + filename + '" ke Download', 'success');
+        log('Download "' + filename + '"', 'success');
+      } catch (e) {
+        showToast('Gagal menyimpan file', 'error');
+      }
+    });
+  }
+  (function(){
+    var pickBtn = document.getElementById('pickFolderBtn');
+    var forgetBtn = document.getElementById('forgetFolderBtn');
+    if (pickBtn) {
+      pickBtn.addEventListener('click', async function(){
+        if (!window.showDirectoryPicker) {
+          showToast('Browser ini belum support pilih folder. Pakai Chrome Android terbaru + PWA Install', 'warn');
           return;
         }
-      } catch (e) {}
+        try {
+          var handle = await window.showDirectoryPicker({mode:'readwrite'});
+          await idbSetCustomFolder(handle);
+          await updateFolderStatusUI();
+          showToast('Folder "' + handle.name + '" disimpan. Semua Save akan ke sini', 'success');
+        } catch(e){
+          if (e && e.name === 'AbortError') return;
+          showToast('Gagal pilih folder: ' + (e.message||e), 'error');
+        }
+      });
     }
-    fallbackDownload(blob, filename);
-  }
+    if (forgetBtn) {
+      forgetBtn.addEventListener('click', async function(){
+        await idbDeleteCustomFolder();
+        await updateFolderStatusUI();
+        showToast('Folder custom dihapus, balik ke Download', 'info');
+      });
+    }
+    setTimeout(updateFolderStatusUI, 800);
+  })();
 
-  function fallbackDownload(blob, filename) {
-    try {
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function() {
-        if (a.parentNode) a.parentNode.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 150);
-      showToast('Download "' + filename + '"', 'success');
-      log('Download "' + filename + '"', 'success');
-    } catch (e) {
-      showToast('Gagal menyimpan file', 'error');
-    }
-  }
 
   /* ============ IMPORT HTML ============ */
   $('importBtn').addEventListener('click', function() { $('fileInput').click(); });
