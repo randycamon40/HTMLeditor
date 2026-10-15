@@ -2826,6 +2826,27 @@ teks baru"></textarea>
   </div>
 </div>
 
+<!-- ============ PROMPT EDITOR MODAL ============ -->
+<div class="find-modal" id="promptEditorModal" hidden>
+  <button class="find-modal-backdrop" id="promptEditorBackdrop" type="button" aria-label="Tutup"></button>
+  <div class="find-modal-box" role="dialog" aria-label="Edit Prompt">
+    <div class="find-modal-header">
+      <span class="find-modal-title" id="promptEditorTitle">Edit Prompt</span>
+      <button class="find-modal-close" id="promptEditorClose" type="button" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <textarea id="promptEditorInput" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" style="width:100%;min-height:280px;max-height:50vh;padding:12px;background:var(--panel-3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',Consolas,monospace;font-size:12.5px;line-height:1.5;resize:vertical;outline:none;display:block;-webkit-appearance:none;margin-bottom:10px;white-space:pre-wrap;word-wrap:break-word;overflow:auto"></textarea>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="find-modal-nav-btn" id="promptEditorReset" type="button" style="flex:0 0 auto;width:auto;padding:0 14px;font-size:12px;font-weight:600">↺ Reset</button>
+      <button class="find-modal-nav-btn" id="promptEditorSave" type="button" style="flex:1;background:var(--accent);color:white;border-color:var(--accent);font-size:12.5px;font-weight:700">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
 <script>
 window.addEventListener('error', function(ev) {
   console.error('JS ERROR:', ev.message, 'Line:', ev.lineno, 'File:', ev.filename);
@@ -2858,7 +2879,7 @@ window.addEventListener('unhandledrejection', function(ev) {
   var PREVIEW_CTX = 30;
   var MAX_QUICK_FIND = 1000;
 
-        var AI_PROMPT_FIND = [
+        var AI_PROMPT_FIND_DEFAULT = [
   'KONTEKS:',
   'Saya mengedit file HTML single-file di Android. Editor saya punya Find & Replace manual (2 kolom: Cari + Ganti). Saya akan copy CARI dan GANTI secara manual.',
   '',
@@ -2893,7 +2914,7 @@ window.addEventListener('unhandledrejection', function(ev) {
   '',
   '3. JANGAN pakai kalimat "sisipkan di antara X dan Y". Ubah jadi: CARI: [X], GANTI: [X + teks baru].',
   '',
-  '4. KIRIM SEMUA perubahan dalam 1 balasan. Mau 3, 5, atau 10 perubahan, kirim sekaligus. Pisahkan tiap Perubahan dengan garis ---. JANGAN bilang "REPLACE SELURUH FILE" dan JANGAN kirim full file.',
+  '4. KIRIM SEMUA perubahan dalam 1 balasan. Mau 3, 5, atau 10 perubahan, kirim sekaligus. Pisahkan tiap Perubahan dengan garis ---. Saya akan copy CARI dan GANTI satu per satu ke 2 kolom manual. JANGAN bilang "REPLACE SELURUH FILE" dan JANGAN kirim full file.',
   '',
   '5. JANGAN ubah bagian yang tidak saya minta. Kalau ada yang menurutmu perlu diubah, sebutkan dulu dan tunggu izin.',
   '',
@@ -2912,37 +2933,12 @@ window.addEventListener('unhandledrejection', function(ev) {
   'Apakah kamu paham? Kalau iya, balas "SIAP" dan tunggu saya kirim kode/perintah.'
 ].join('\n');
 
-  var AI_PROMPT_BATCH = [
+  var AI_PROMPT_FIND = safeGet('hp_prompt_find', AI_PROMPT_FIND_DEFAULT);
+
+  var AI_PROMPT_BATCH_DEFAULT = [
   'KONTEKS:',
   'Saya mengedit file HTML single-file di Android. Editor saya punya fitur "Batch Replace" yang mengeksekusi blok CARI/GANTI BERURUTAN dari atas ke bawah (blok 1 dulu, tunggu, blok 2, tunggu, dst). Setiap blok dicek TERHADAP STATE FILE SAAT ITU, bukan terhadap file awal.',
   'Konsekuensinya: kalau blok #2 anchor-nya berada di area yang sudah diubah oleh blok #1, anchor #2 WAJIB merujuk ke teks SETELAH perubahan blok #1 (bukan teks asli).',
-  '',
-  'Total: [N] perubahan',
-  '',
-  'FORMAT WAJIB TIAP PERUBAHAN:',
-  '',
-  'Struktur tiap Perubahan WAJIB:',
-  '- Baris "Perubahan N: judul singkat" di LUAR code block',
-  '- Baris "Lokasi: ..." di LUAR code block',
-  '- Satu code block (tiga backtick) berisi HANYA CARI + GANTI DENGAN',
-  '- Baris "Fungsi: ..." di LUAR code block',
-  '',
-  'Contoh:',
-  '',
-  'Perubahan 1: Ganti max-height',
-  'Lokasi: field-input CSS',
-  '',
-  '```',
-  'CARI:',
-  '    max-height: 46px;',
-  '',
-  'GANTI DENGAN:',
-  '    max-height: 120px;',
-  '```',
-  '',
-  'Fungsi: Kolom input lebih tinggi.',
-  '',
-  'Pisahkan tiap Perubahan dengan garis ---',
   '',
   'Total: [N] perubahan',
   '',
@@ -2983,7 +2979,27 @@ window.addEventListener('unhandledrejection', function(ev) {
   '',
   '2c. Kalau single-line TIDAK bisa unik (muncul 2x atau lebih), boleh pakai 2-3 baris berurutan yang identik persis termasuk enter dan spasi.',
   '',
-  '2d. Setiap Perubahan punya code block SENDIRI. JANGAN gabung beberapa Perubahan jadi 1 code block. JANGAN pakai ### di judul. Saya akan paste SEMUA code block sekaligus ke Batch dan eksekusi berurutan.',
+  '2d. WAJIB: kirim SEMUA perubahan dalam SATU code block panjang. Di dalam code block itu, tulis CARI/GANTI berurutan, pisahkan tiap blok dengan garis ---. JANGAN pecah jadi beberapa code block terpisah.',
+  '',
+  'Contoh struktur 1 code block yang benar (2 perubahan):',
+  '',
+  '```',
+  'CARI:',
+  'teks asli pertama',
+  '',
+  'GANTI DENGAN:',
+  'teks baru pertama',
+  '',
+  '---',
+  '',
+  'CARI:',
+  'teks asli kedua',
+  '',
+  'GANTI DENGAN:',
+  'teks baru kedua',
+  '```',
+  '',
+  'SALAH: memecah jadi 2 code block terpisah (Perubahan 1 di block A, Perubahan 2 di block B).',
   '',
   '2e. URUTAN BLOK WAJIB TOP-DOWN: Blok 1 harus di posisi file paling atas, blok 2 di bawahnya, dst. JANGAN acak. Ini karena eksekusi berurutan dari atas ke bawah.',
   '',
@@ -2991,7 +3007,7 @@ window.addEventListener('unhandledrejection', function(ev) {
   '',
   '3. JANGAN pakai kalimat "sisipkan di antara X dan Y". Ubah jadi: CARI: [X], GANTI: [X + teks baru].',
   '',
-  '4. KIRIM SEMUA perubahan dalam 1 balasan. Mau 3, 5, atau 10 perubahan, kirim sekaligus. Pisahkan tiap Perubahan dengan garis ---. JANGAN bilang "REPLACE SELURUH FILE" dan JANGAN kirim full file.',
+  '4. KIRIM SEMUA perubahan dalam 1 balasan, dalam 1 code block panjang. Mau 3, 5, atau 10 perubahan, semuanya masuk ke code block yang SAMA. Saya akan tap "Salin" sekali, paste ke modal Batch, lalu tap Terapkan sekali. JANGAN bilang "REPLACE SELURUH FILE" dan JANGAN kirim full file.',
   '',
   '5. JANGAN ubah bagian yang tidak saya minta. Kalau ada yang menurutmu perlu diubah, sebutkan dulu dan tunggu izin.',
   '',
@@ -3009,6 +3025,8 @@ window.addEventListener('unhandledrejection', function(ev) {
   '',
   'Apakah kamu paham? Kalau iya, balas "SIAP" dan tunggu saya kirim kode/perintah.'
 ].join('\n');
+
+  var AI_PROMPT_BATCH = safeGet('hp_prompt_batch', AI_PROMPT_BATCH_DEFAULT);
 
   var ICON_SUN = '<circle cx="12" cy="12" r="4"></circle>' +
     '<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>';
@@ -3530,13 +3548,112 @@ var lastRenderedCode = null;
     });
   }
 
-  /* ============ AI PROMPT ============ */
-  $('promptBtn').addEventListener('click', function() {
-    copyToClipboard(AI_PROMPT_FIND, 'Prompt Find & Replace dicopy');
+  /* ============ AI PROMPT + LONG-PRESS EDITOR ============ */
+  var promptEditorModal = $('promptEditorModal');
+  var promptEditorInput = $('promptEditorInput');
+  var promptEditorTitle = $('promptEditorTitle');
+  var promptEditorClose = $('promptEditorClose');
+  var promptEditorBackdrop = $('promptEditorBackdrop');
+  var promptEditorSave = $('promptEditorSave');
+  var promptEditorReset = $('promptEditorReset');
+  var _peTarget = null;
+  var _peDefault = '';
+  var _peOnSave = null;
+
+  function openPromptEditor(which) {
+    if (!promptEditorModal) return;
+    _peTarget = which;
+    if (which === 'find') {
+      promptEditorTitle.textContent = 'Prompt Find & Replace';
+      _peDefault = AI_PROMPT_FIND_DEFAULT;
+      _peOnSave = function(v) { AI_PROMPT_FIND = v; safeSet('hp_prompt_find', v); };
+    } else {
+      promptEditorTitle.textContent = 'Prompt Batch Replace';
+      _peDefault = AI_PROMPT_BATCH_DEFAULT;
+      _peOnSave = function(v) { AI_PROMPT_BATCH = v; safeSet('hp_prompt_batch', v); };
+    }
+    promptEditorInput.value = (which === 'find') ? AI_PROMPT_FIND : AI_PROMPT_BATCH;
+    promptEditorModal.hidden = false;
+    setTimeout(function() { try { promptEditorInput.focus(); } catch(e){} }, 120);
+  }
+  function closePromptEditor() {
+    if (promptEditorModal) promptEditorModal.hidden = true;
+    _peTarget = null;
+    _peOnSave = null;
+  }
+  if (promptEditorClose) promptEditorClose.addEventListener('click', closePromptEditor);
+  if (promptEditorBackdrop) promptEditorBackdrop.addEventListener('click', closePromptEditor);
+  if (promptEditorSave) promptEditorSave.addEventListener('click', function() {
+    if (!_peOnSave) return;
+    var v = promptEditorInput.value;
+    if (!v.trim()) { showToast('Prompt kosong — tidak disimpan', 'warn'); return; }
+    _peOnSave(v);
+    showToast('Prompt disimpan', 'success');
+    log('Prompt ' + (_peTarget === 'find' ? 'Find' : 'Batch') + ' disimpan (' + v.length + ' char)', 'success');
+    closePromptEditor();
   });
-  $('promptBatchBtn').addEventListener('click', function() {
-    copyToClipboard(AI_PROMPT_BATCH, 'Prompt Batch Replace dicopy');
+  if (promptEditorReset) promptEditorReset.addEventListener('click', function() {
+    if (!_peDefault) return;
+    if (!confirm('Kembalikan ke prompt default?\nPerubahan yang belum disimpan akan hilang.')) return;
+    promptEditorInput.value = _peDefault;
+    showToast('Direset ke default — tap Simpan untuk menyimpan', 'info');
   });
+
+  function attachPromptLongPress(btnId, which) {
+    var btn = $(btnId);
+    if (!btn) return;
+    var timer = null;
+    var wasLong = false;
+    var lastTouch = 0;
+
+    function doShort() {
+      var txt = (which === 'find') ? AI_PROMPT_FIND : AI_PROMPT_BATCH;
+      var label = (which === 'find') ? 'Prompt Find & Replace dicopy' : 'Prompt Batch Replace dicopy';
+      copyToClipboard(txt, label);
+    }
+    function doLong() {
+      try { navigator.vibrate && navigator.vibrate(30); } catch(e) {}
+      openPromptEditor(which);
+    }
+    function start() {
+      wasLong = false;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function() {
+        timer = null;
+        wasLong = true;
+        doLong();
+      }, 500);
+    }
+    function end(e) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (wasLong) {
+        if (e && e.preventDefault) e.preventDefault();
+        wasLong = false;
+        return;
+      }
+      doShort();
+    }
+    function cancel() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      wasLong = false;
+    }
+
+    btn.addEventListener('touchstart', function() { lastTouch = Date.now(); start(); }, { passive: true });
+    btn.addEventListener('touchend', function(e) { end(e); });
+    btn.addEventListener('touchcancel', cancel);
+    btn.addEventListener('mousedown', function() {
+      if (Date.now() - lastTouch < 800) return;
+      start();
+    });
+    btn.addEventListener('mouseup', function(e) {
+      if (Date.now() - lastTouch < 800) return;
+      end(e);
+    });
+    btn.addEventListener('mouseleave', cancel);
+    btn.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+  }
+  attachPromptLongPress('promptBtn', 'find');
+  attachPromptLongPress('promptBatchBtn', 'batch');
 
   /* ============ SEARCH OPTIONS ============ */
   searchOpts.caseSensitive = safeGet(STORAGE_OPT_CASE, '0') === '1';
@@ -5821,6 +5938,8 @@ line = line.replace(/≤/g, '<=').replace(/≥/g, '>=');
 line = line.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
 line = line.replace(/\u00A0/g, ' ');
 lines[i] = line;
+var rawTrimmed = line.trim();
+if (/^-{3,}\s*$/.test(rawTrimmed)) { pushCurrent(); continue; }
 var trimmed = line.trim()
   .replace(/^[-*•>\s]+/, '')
   .replace(/^[`*_]+/, '')
@@ -5838,7 +5957,6 @@ var trimmed = line.trim()
       mode = 'replace';
       continue;
     }
-    if (/^-{3,}\s*$/.test(trimmed)) { pushCurrent(); continue; }
     if (/^#{1,6}\s/.test(trimmed)) { pushCurrent(); continue; }
     if (/^(Fungsi|Lokasi|Catatan\s+penting|Catatan|Note|Notes)\s*:/i.test(trimmed)) {
       pushCurrent();
@@ -5937,44 +6055,29 @@ function applyBatch() {
   if (batchApplyBtn) batchApplyBtn.disabled = true;
   var applied = 0;
   var notFound = 0;
-  var currentIndex = 0;
-  var DELAY_MS = 1500;
   var totalValid = valid.length;
-
-  updateBatchStatus('⏳ 0/' + totalValid + ' · mulai...', 'empty');
-
-  function _applyNext() {
-    if (currentIndex >= totalValid) {
-      if (batchApplyBtn) batchApplyBtn.disabled = false;
-      afterCodeChange();
-      updateMatchInfo();
-      var _msg = '✅ ' + applied + '/' + totalValid + ' diterapkan';
-      if (notFound > 0) _msg += ' · ' + notFound + ' tidak ketemu';
-      if (invalid > 0) _msg += ' · ' + invalid + ' dilewati';
-      updateBatchStatus(_msg, applied > 0 ? 'empty' : 'error');
-      showToast('Batch selesai: ' + applied + '/' + totalValid + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
-      log('Batch Replace: ' + applied + '/' + totalValid + ' diterapkan (berurutan)', applied > 0 ? 'success' : 'error');
-      return;
-    }
-    var p = valid[currentIndex];
-    var n = currentIndex + 1;
+  for (var q = 0; q < totalValid; q++) {
+    var p = valid[q];
     var text = codeArea.value;
     var _m = findAnchor(text, p.find);
     if (_m) {
       codeArea.value = text.slice(0, _m.index) + p.replace + text.slice(_m.index + _m.length);
       applied++;
-      updateBatchStatus('⏳ #' + n + ' ✓ · ' + applied + '/' + totalValid, 'empty');
-      log('Batch #' + n + ': ✓ diterapkan', 'success');
+      log('Batch #' + (q + 1) + ': ✓ diterapkan', 'success');
     } else {
       notFound++;
-      updateBatchStatus('⚠️ #' + n + ' tidak ketemu · lanjut...', 'error');
-      log('Batch #' + n + ': ❌ tidak ketemu', 'warn');
+      log('Batch #' + (q + 1) + ': ❌ tidak ketemu', 'warn');
     }
-    updateStats();
-    currentIndex++;
-    setTimeout(_applyNext, DELAY_MS);
   }
-  setTimeout(_applyNext, 200);
+  if (batchApplyBtn) batchApplyBtn.disabled = false;
+  afterCodeChange();
+  updateMatchInfo();
+  var _msg = '✅ ' + applied + '/' + totalValid + ' diterapkan';
+  if (notFound > 0) _msg += ' · ' + notFound + ' tidak ketemu';
+  if (invalid > 0) _msg += ' · ' + invalid + ' dilewati';
+  updateBatchStatus(_msg, applied > 0 ? 'empty' : 'error');
+  showToast('Batch selesai: ' + applied + '/' + totalValid + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
+  log('Batch Replace: ' + applied + '/' + totalValid + ' diterapkan', applied > 0 ? 'success' : 'error');
 }
 
 function openBatchModal() {
@@ -6115,44 +6218,30 @@ batchInput.focus();
     if (navApply) navApply.disabled = true;
     var applied = 0;
     var notFound = 0;
-    var currentIndex = 0;
-    var DELAY_MS = 1500;
     var totalValid = valid.length;
-    navUpdateStatus('⏳ 0/' + totalValid + ' · mulai...', 'empty');
-
-    function _navApplyNext() {
-      if (currentIndex >= totalValid) {
-        if (navApply) navApply.disabled = false;
-        afterCodeChange();
-        updateMatchInfo();
-        var _msg = '✅ ' + applied + '/' + totalValid + ' diterapkan';
-        if (notFound > 0) _msg += ' · ' + notFound + ' tidak ketemu';
-        if (invalid > 0) _msg += ' · ' + invalid + ' dilewati';
-        navUpdateStatus(_msg, applied > 0 ? 'empty' : 'error');
-        showToast('Batch selesai: ' + applied + '/' + totalValid + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
-        log('Batch Replace (nav): ' + applied + '/' + totalValid + ' diterapkan (berurutan)', applied > 0 ? 'success' : 'error');
-        navPreviewFn();
-        return;
-      }
-      var p = valid[currentIndex];
-      var n = currentIndex + 1;
+    for (var q = 0; q < totalValid; q++) {
+      var p = valid[q];
       var text = codeArea.value;
       var _m = findAnchor(text, p.find);
       if (_m) {
         codeArea.value = text.slice(0, _m.index) + p.replace + text.slice(_m.index + _m.length);
         applied++;
-        navUpdateStatus('⏳ #' + n + ' ✓ · ' + applied + '/' + totalValid, 'empty');
-        log('Batch #' + n + ': ✓ diterapkan (nav)', 'success');
+        log('Batch #' + (q + 1) + ': ✓ diterapkan (nav)', 'success');
       } else {
         notFound++;
-        navUpdateStatus('⚠️ #' + n + ' tidak ketemu · lanjut...', 'error');
-        log('Batch #' + n + ': ❌ tidak ketemu (nav)', 'warn');
+        log('Batch #' + (q + 1) + ': ❌ tidak ketemu (nav)', 'warn');
       }
-      updateStats();
-      currentIndex++;
-      setTimeout(_navApplyNext, DELAY_MS);
     }
-    setTimeout(_navApplyNext, 200);
+    if (navApply) navApply.disabled = false;
+    afterCodeChange();
+    updateMatchInfo();
+    var _msg = '✅ ' + applied + '/' + totalValid + ' diterapkan';
+    if (notFound > 0) _msg += ' · ' + notFound + ' tidak ketemu';
+    if (invalid > 0) _msg += ' · ' + invalid + ' dilewati';
+    navUpdateStatus(_msg, applied > 0 ? 'empty' : 'error');
+    showToast('Batch selesai: ' + applied + '/' + totalValid + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
+    log('Batch Replace (nav): ' + applied + '/' + totalValid + ' diterapkan', applied > 0 ? 'success' : 'error');
+    navPreviewFn();
   }
 
   if(navPreview) navPreview.addEventListener('click', navPreviewFn);
