@@ -82,6 +82,8 @@
     flex-shrink: 0; gap: 6px; padding: 8px 10px;
     background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, var(--panel-2)), color-mix(in srgb, #8b5cf6 18%, var(--panel-2)));
     border: 1px solid var(--border); border-radius: 10px; touch-action: none;
+    position: relative;
+    z-index: 10;
   }
   .ml-header:active { cursor: grabbing; }
   .ml-title-wrap { font-size: 11px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -91,20 +93,35 @@
   .ml-zoom-btn:active { transform: scale(0.94); background: var(--accent); color: white; border-color: var(--accent); }
   .ml-close-btn svg { width: 13px; height: 13px; pointer-events: none; }
   .ml-body {
-    flex: 1; background: #0f1117; border: 1px solid var(--border); border-radius: 10px; min-height: 0;
-    overflow: auto; position: relative; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;
-    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-    overscroll-behavior: contain;
+    flex: 1 1 0;
+    background: #0f1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-width: 0;
+    min-height: 0;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+    touch-action: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    display: block;
+    position: relative;
+    z-index: 1;
   }
   .ml-body::-webkit-scrollbar { width: 6px; height: 6px; }
   .ml-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   .ml-viewport {
-    width: 390px; min-height: 800px; background: white; transform-origin: top left;
-    overflow: hidden; /* cegah bocor */
+    width: 390px; height: 1400px; background: white; transform-origin: top left;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
+    margin: 0;
   }
   #miniLiveFrame {
-    width: 100%; height: 800px; border: none; background: white; display: block;
+    width: 390px; height: 1400px; border: none; background: white; display: block;
     overflow: hidden;
+    border-radius: 10px;
+    pointer-events: none;
   }
   .ml-viewonly-overlay { display: none; }
   .ml-badge-viewonly { display: none !important; }
@@ -6325,7 +6342,6 @@ renderLog();
       viewportEl.style.zoom = zoom;
       viewportEl.style.transform = 'none';
       viewportEl.style.transformOrigin = 'top left';
-      viewportEl.style.height = '800px';
     }
     function updatePreview() {
       if (!isOpen || !frame) return;
@@ -6334,25 +6350,62 @@ renderLog();
       var htmlCode = code ? code : empty;
       try {
         // ANTI BOCOR INJECTION - paksa semua konten tidak melebihi 390px
-        var lock = '<style>html{width:390px!important;max-width:390px!important;overflow-x:hidden!important;box-sizing:border-box!important} body{width:390px!important;max-width:390px!important;overflow-x:hidden!important;margin:0!important;padding:12px!important;box-sizing:border-box!important} *{max-width:100%!important;box-sizing:border-box!important;word-wrap:break-word!important;overflow-wrap:break-word!important;word-break:break-word!important} img,video,iframe,table,pre,code{max-width:390px!important;max-width:100%!important;overflow:hidden!important} pre,code{white-space:pre-wrap!important;word-break:break-all!important} a,button{pointer-events:none!important}</style><meta name="viewport" content="width=390,initial-scale=1">';
-        if (htmlCode.indexOf('</head>') !== -1) htmlCode = htmlCode.replace('</head>', lock + '</head>');
-        else if (htmlCode.indexOf('<head>') !== -1) htmlCode = htmlCode.replace('<head>', '<head>' + lock);
-        else htmlCode = lock + htmlCode;
+        var lock = '<style>' +
+          'html, body { width: 390px !important; max-width: 390px !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; min-height: 0 !important; height: auto !important; }' +
+          'body { padding: 12px !important; }' +
+          '*, *::before, *::after { box-sizing: border-box !important; }' +
+          'img, video, iframe, table, pre, code { max-width: 100% !important; }' +
+          'pre, code { white-space: pre-wrap !important; word-break: break-all !important; }' +
+          '[style*="position:fixed"], [style*="position: fixed"] { position: absolute !important; }' +
+          '' +
+          '::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }' +
+          '</style>' +
+          '<meta name="viewport" content="width=390,initial-scale=1">';
+        var _headPos = htmlCode.lastIndexOf('</head>');
+        if (_headPos !== -1) {
+          htmlCode = htmlCode.slice(0, _headPos) + lock + htmlCode.slice(_headPos);
+        } else {
+          var _openHead = htmlCode.lastIndexOf('<head>');
+          if (_openHead !== -1) {
+            htmlCode = htmlCode.slice(0, _openHead + 6) + lock + htmlCode.slice(_openHead + 6);
+          } else {
+            htmlCode = lock + htmlCode;
+          }
+        }
       } catch(e) {}
       try {
         var autoH = '<script>(function(){' +
-          'function send(){try{var h=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,800);parent.postMessage({type:"mlFrameHeight",h:h},"*");}catch(e){}}' +
+          'function measure(){try{' +
+          'var b=document.body;if(!b)return 100;' +
+          'var r=b.getBoundingClientRect();' +
+          'var h=Math.ceil(r.height);' +
+          'var last=b.lastElementChild;' +
+          'if(last){var lr=last.getBoundingClientRect();' +
+          'var lb=Math.ceil(lr.bottom - r.top);' +
+          'if(lb>h)h=lb;}' +
+          'return Math.max(h,100);' +
+          '}catch(err){return 100;}}' +
+          'function send(){try{parent.postMessage({type:"mlFrameHeight",h:Math.round(measure())},"*");}catch(e){}}' +
           'window.addEventListener("load",send);' +
           'window.addEventListener("resize",send);' +
           'if(window.MutationObserver){try{new MutationObserver(send).observe(document.documentElement,{childList:true,subtree:true,attributes:true});}catch(e){}}' +
+          'setTimeout(send,60);' +
+          'setTimeout(send,150);' +
+          'setTimeout(send,350);' +
+          'setTimeout(send,700);' +
+          'setTimeout(send,1200);' +
+          'setTimeout(send,2000);' +
           'setInterval(send,1500);' +
           'send();' +
           '})();<\/script>';
-        if (htmlCode.indexOf('</body>') !== -1) htmlCode = htmlCode.replace('</body>', autoH + '</body>');
-        else htmlCode = htmlCode + autoH;
+        var _bodyPos = htmlCode.lastIndexOf('</body>');
+        if (_bodyPos !== -1) {
+          htmlCode = htmlCode.slice(0, _bodyPos) + autoH + htmlCode.slice(_bodyPos);
+        } else {
+          htmlCode = htmlCode + autoH;
+        }
       } catch(e) {}
       frame.srcdoc = htmlCode;
-      frame.style.height = '800px';
     }
     window._mlUpdate = updatePreview;
     saveBtn.addEventListener('click', function(e) {
@@ -6426,12 +6479,10 @@ renderLog();
       if (header) header.style.cursor = 'grab';
     }
     if (header) { header.addEventListener('mousedown', dStart); header.addEventListener('touchstart', dStart, {passive:false}); }
+    /* Disabled: pakai fixed height 1400px dari CSS */
     window.addEventListener('message', function(ev) {
       if (!ev.data || ev.data.type !== 'mlFrameHeight') return;
-      var h = parseInt(ev.data.h, 10);
-      if (!h || h < 100) return;
-      if (frame) frame.style.height = h + 'px';
-      if (viewportEl) viewportEl.style.minHeight = h + 'px';
+      /* no-op: tinggi iframe & viewport fixed dari CSS */
     });
     window.addEventListener('resize', function() {
       if (!floatWin.classList.contains('show')) return;
