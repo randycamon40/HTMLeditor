@@ -48,6 +48,73 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 
+    /* ===== Floating Live Preview - FINAL v5 ANTI BOCOR + SUPER SMALL ===== */
+  #miniLiveFloat {
+    position: fixed;
+    top: 80px;
+    right: 16px;
+    width: 340px;
+    height: 440px;
+    min-width: 120px;
+    min-height: 140px;
+    max-width: 92vw;
+    max-height: 88vh;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 16px 48px var(--shadow), 0 0 0 1px rgba(99,102,241,0.15);
+    z-index: 9990;
+    display: flex;
+    flex-direction: column;
+    resize: both;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    padding: 8px;
+    gap: 6px;
+  }
+  #miniLiveFloat.show { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+  .ml-header {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: grab; user-select: none; -webkit-user-select: none;
+    flex-shrink: 0; gap: 6px; padding: 8px 10px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, var(--panel-2)), color-mix(in srgb, #8b5cf6 18%, var(--panel-2)));
+    border: 1px solid var(--border); border-radius: 10px; touch-action: none;
+  }
+  .ml-header:active { cursor: grabbing; }
+  .ml-title-wrap { font-size: 11px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ml-live-dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); animation: pulse 1.4s infinite; flex-shrink: 0; }
+  .ml-close-btn, .ml-zoom-btn { width: 28px; height: 28px; border-radius: 8px; background: var(--panel); border: 1px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: all 0.12s; flex-shrink: 0; }
+  .ml-close-btn:active { transform: scale(0.94); background: var(--danger); color: white; border-color: var(--danger); }
+  .ml-zoom-btn:active { transform: scale(0.94); background: var(--accent); color: white; border-color: var(--accent); }
+  .ml-close-btn svg { width: 13px; height: 13px; pointer-events: none; }
+  .ml-body {
+    flex: 1; background: #0f1117; border: 1px solid var(--border); border-radius: 10px; min-height: 0;
+    overflow: auto; position: relative; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    /* ANTI BOCOR */
+    contain: content;
+  }
+  .ml-body::-webkit-scrollbar { width: 6px; height: 6px; }
+  .ml-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .ml-viewport {
+    width: 390px; min-height: 800px; background: white; transform-origin: top left;
+    overflow: hidden; /* cegah bocor */
+    contain: content;
+  }
+  #miniLiveFrame {
+    width: 100%; height: 800px; border: none; background: white; display: block;
+    overflow: hidden;
+  }
+  .ml-viewonly-overlay { display: none; }
+  .ml-badge-viewonly { display: none !important; }
+  .font-size-wrap { position: relative; z-index: 200; }
+  .font-size-menu { z-index: 10000 !important; position: absolute; }
+  #panel-home .mini-btn { position: relative; z-index: 100; }
+  .code-header { position: relative; z-index: 100; }
+
   /* ===== BatchReplace Panel - simple & clean ===== */
   #panel-batchreplace { padding: 16px; }
   #panel-batchreplace:not([hidden]) { display: flex; flex-direction: column; gap: 12px; }
@@ -2132,7 +2199,7 @@
 
           <span class="code-divider"></span>
 
-          <button class="mini-btn text-btn save-html-btn" id="saveHtmlBtn" type="button" title="Simpan HTML">Save</button>
+          <button class="mini-btn text-btn save-html-btn" id="saveHtmlBtn" type="button" title="Live Preview Mini">Live</button>
         </div>
 
         <div class="code-row code-row-2">
@@ -2709,6 +2776,23 @@ teks baru"></textarea>
   </div>
 </div>
 
+<!-- ============ MINI LIVE PREVIEW FLOAT - SNAPSHOT VIEW ONLY ============ -->
+<div id="miniLiveFloat">
+  <div class="ml-header" id="mlHeader">
+    <div class="ml-title-wrap"><span class="ml-live-dot"></span><span>Live Preview</span></div>
+    <div style="display:flex;gap:4px;align-items:center;">
+      <button class="ml-zoom-btn" id="mlZoomOutBtn" type="button" title="Zoom Out">−</button>
+      <button class="ml-zoom-btn" id="mlZoomInBtn" type="button" title="Zoom In">+</button>
+      <button class="ml-close-btn" id="mlCloseBtn" type="button" aria-label="Tutup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+  </div>
+  <div class="ml-body" id="mlBody">
+    <div class="ml-viewport" id="mlViewport">
+      <iframe id="miniLiveFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
+  </div>
+</div>
+
 <!-- ============ BATCH MODAL ============ -->
 <div class="find-modal" id="batchModal" hidden>
   <button class="find-modal-backdrop" id="batchModalBackdrop" type="button" aria-label="Tutup"></button>
@@ -2830,7 +2914,35 @@ window.addEventListener('unhandledrejection', function(ev) {
 
   var AI_PROMPT_BATCH = [
   'KONTEKS:',
-  'Saya mengedit file HTML single-file di Android. Editor saya cuma punya Find & Replace, TIDAK ada line number. Output kamu harus "search-friendly" dan anchor-nya presisi.',
+  'Saya mengedit file HTML single-file di Android. Editor saya punya fitur "Batch Replace" yang mengeksekusi blok CARI/GANTI BERURUTAN dari atas ke bawah (blok 1 dulu, tunggu, blok 2, tunggu, dst). Setiap blok dicek TERHADAP STATE FILE SAAT ITU, bukan terhadap file awal.',
+  'Konsekuensinya: kalau blok #2 anchor-nya berada di area yang sudah diubah oleh blok #1, anchor #2 WAJIB merujuk ke teks SETELAH perubahan blok #1 (bukan teks asli).',
+  '',
+  'Total: [N] perubahan',
+  '',
+  'FORMAT WAJIB TIAP PERUBAHAN:',
+  '',
+  'Struktur tiap Perubahan WAJIB:',
+  '- Baris "Perubahan N: judul singkat" di LUAR code block',
+  '- Baris "Lokasi: ..." di LUAR code block',
+  '- Satu code block (tiga backtick) berisi HANYA CARI + GANTI DENGAN',
+  '- Baris "Fungsi: ..." di LUAR code block',
+  '',
+  'Contoh:',
+  '',
+  'Perubahan 1: Ganti max-height',
+  'Lokasi: field-input CSS',
+  '',
+  '```',
+  'CARI:',
+  '    max-height: 46px;',
+  '',
+  'GANTI DENGAN:',
+  '    max-height: 120px;',
+  '```',
+  '',
+  'Fungsi: Kolom input lebih tinggi.',
+  '',
+  'Pisahkan tiap Perubahan dengan garis ---',
   '',
   'Total: [N] perubahan',
   '',
@@ -2871,7 +2983,11 @@ window.addEventListener('unhandledrejection', function(ev) {
   '',
   '2c. Kalau single-line TIDAK bisa unik (muncul 2x atau lebih), boleh pakai 2-3 baris berurutan yang identik persis termasuk enter dan spasi.',
   '',
-  '2d. Setiap Perubahan punya code block SENDIRI. JANGAN gabung beberapa Perubahan jadi 1 code block. JANGAN pakai ### di judul. Tujuannya: saya tap Salin di code block Perubahan 1, paste ke Batch, apply. Lalu code block Perubahan 2, paste, apply. Satu-satu.',
+  '2d. Setiap Perubahan punya code block SENDIRI. JANGAN gabung beberapa Perubahan jadi 1 code block. JANGAN pakai ### di judul. Saya akan paste SEMUA code block sekaligus ke Batch dan eksekusi berurutan.',
+  '',
+  '2e. URUTAN BLOK WAJIB TOP-DOWN: Blok 1 harus di posisi file paling atas, blok 2 di bawahnya, dst. JANGAN acak. Ini karena eksekusi berurutan dari atas ke bawah.',
+  '',
+  '2f. Kalau blok #2 anchor-nya berada di area yang diubah oleh blok #1, anchor #2 harus merujuk ke teks SETELAH perubahan blok #1. Contoh: blok #1 mengubah "<div class=old>" jadi "<div class=new>", maka blok #2 yang menyentuh div yang sama harus cari "<div class=new>", bukan "<div class=old>".',
   '',
   '3. JANGAN pakai kalimat "sisipkan di antara X dan Y". Ubah jadi: CARI: [X], GANTI: [X + teks baru].',
   '',
@@ -2885,7 +3001,7 @@ window.addEventListener('unhandledrejection', function(ev) {
   '',
   '8. Output harus RINGKAS. Tidak perlu penjelasan panjang. Langsung CARI-GANTI.',
   '',
-  '9. Kalau kode HTML panjang, PECAH jadi beberapa CARI-GANTI kecil yang anchor-nya unik.',
+  '9. Kalau kode HTML panjang, PECAH jadi beberapa CARI-GANTI kecil. Anchor tiap blok harus unik PADA SAAT BLOK ITU DIEKSEKUSI (setelah blok-blok sebelumnya diterapkan).',
   '',
   '10. Di akhir jawaban, kasih 1-2 langkah TES singkat supaya saya bisa verifikasi hasilnya.',
   '',
@@ -3309,16 +3425,6 @@ var lastRenderedCode = null;
     });
   })();
 
-  /* ============ SAVE HTML (quick access di header) ============ */
-  (function() {
-    var saveHtmlBtnEl = $('saveHtmlBtn');
-    if (!saveHtmlBtnEl) return;
-    saveHtmlBtnEl.addEventListener('click', function() {
-      var toolsSaveBtn = $('saveBtn');
-      if (toolsSaveBtn) toolsSaveBtn.click();
-    });
-  })();
-
   
   /* ============ EDIT TOGGLE - lock/unlock HTML edit ============ */
   var editToggleBtn = $('editToggleBtn');
@@ -3716,11 +3822,19 @@ if (searchOpts.regex && !isRegexValid(find, searchOpts)) {
 
   function updateMatchNavUI(totalParam) {
     var total = (typeof totalParam === 'number') ? totalParam : countMatches();
-    if (total <= 0) { matchNavEl.hidden = true; return; }
+    if (total <= 0) {
+      matchNavEl.hidden = true;
+      if (matchPrevBtn) matchPrevBtn.disabled = true;
+      if (matchNextBtn) matchNextBtn.disabled = true;
+      if (matchCounterEl) matchCounterEl.textContent = '0 / 0';
+      return;
+    }
     matchNavEl.hidden = false;
     if (currentMatchIndex >= total) currentMatchIndex = total - 1;
     if (currentMatchIndex < 0) currentMatchIndex = 0;
     matchCounterEl.textContent = (currentMatchIndex + 1) + ' / ' + total;
+    if (matchPrevBtn) matchPrevBtn.disabled = false;
+    if (matchNextBtn) matchNextBtn.disabled = false;
   }
 
   matchPrevBtn.addEventListener('click', function() {
@@ -4189,11 +4303,6 @@ if (matchInfoTimer) clearTimeout(matchInfoTimer);
     if (skipHistory) return;
     flushHistoryTimer();
     var s = snapshot();
-if (historyIndex >= 0) {
-  var prevLen = history[historyIndex].value.length;
-  var charDiff = Math.abs(s.value.length - prevLen);
-  if (charDiff > 0 && charDiff < 20) return;
-}
     if (historyIndex >= 0 && history[historyIndex].value === s.value) return;
     history = history.slice(0, historyIndex + 1);
     history.push(s);
@@ -5753,7 +5862,7 @@ function previewBatch() {
   if (!raw.trim()) { updateBatchStatus('Kosong — paste dulu hasil AI-nya', 'empty'); return; }
   var pairs = parseBatchPairs(raw);
   if (pairs.length === 0) { updateBatchStatus('❌ Tidak ada blok CARI/GANTI', 'error'); return; }
-  var code = codeArea.value;
+  var simText = codeArea.value;
 var complete = 0, found = 0, notFound = 0, incomplete = 0;
 var detailItems = [];
 for (var i = 0; i < pairs.length; i++) {
@@ -5763,8 +5872,15 @@ for (var i = 0; i < pairs.length; i++) {
   var status, snippet;
   if (hasFind && hasReplace) {
     complete++;
-    if (findAnchor(code, p.find)) { found++; status = 'ok'; }
-    else { notFound++; status = 'miss'; }
+    var _m = findAnchor(simText, p.find);
+    if (_m) {
+      found++;
+      status = 'ok';
+      simText = simText.slice(0, _m.index) + p.replace + simText.slice(_m.index + _m.length);
+    } else {
+      notFound++;
+      status = 'miss';
+    }
     snippet = p.find;
   } else {
     incomplete++;
@@ -5818,45 +5934,47 @@ function applyBatch() {
   if (invalid > 0) confirmMsg += '\n\n⚠️ ' + invalid + ' blok dilewati (tidak lengkap)';
   if (!confirm(confirmMsg)) return;
 
-  var text = codeArea.value;
-var notFound = 0;
-var ops = [];
-for (var j = 0; j < valid.length; j++) {
-  var f = valid[j].find;
-  var _m = findAnchor(text, f);
-  if (!_m) { notFound++; continue; }
-  ops.push({ start: _m.index, end: _m.index + _m.length, replace: valid[j].replace });
-}
+  if (batchApplyBtn) batchApplyBtn.disabled = true;
+  var applied = 0;
+  var notFound = 0;
+  var currentIndex = 0;
+  var DELAY_MS = 1500;
+  var totalValid = valid.length;
 
-ops.sort(function(a, b) { return a.start - b.start; });
-var kept = [];
-var lastEnd = -1;
-for (var k = 0; k < ops.length; k++) {
-  if (ops[k].start >= lastEnd) { kept.push(ops[k]); lastEnd = ops[k].end; }
-}
+  updateBatchStatus('⏳ 0/' + totalValid + ' · mulai...', 'empty');
 
-kept.sort(function(a, b) { return b.start - a.start; });
-for (var m = 0; m < kept.length; m++) {
-  var op = kept[m];
-  text = text.slice(0, op.start) + op.replace + text.slice(op.end);
-}
-
-var applied = kept.length;
-var skipped = ops.length - kept.length;
-
-  if (applied > 0) {
-    codeArea.value = text;
-    afterCodeChange();
-    updateMatchInfo();
+  function _applyNext() {
+    if (currentIndex >= totalValid) {
+      if (batchApplyBtn) batchApplyBtn.disabled = false;
+      afterCodeChange();
+      updateMatchInfo();
+      var _msg = '✅ ' + applied + '/' + totalValid + ' diterapkan';
+      if (notFound > 0) _msg += ' · ' + notFound + ' tidak ketemu';
+      if (invalid > 0) _msg += ' · ' + invalid + ' dilewati';
+      updateBatchStatus(_msg, applied > 0 ? 'empty' : 'error');
+      showToast('Batch selesai: ' + applied + '/' + totalValid + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
+      log('Batch Replace: ' + applied + '/' + totalValid + ' diterapkan (berurutan)', applied > 0 ? 'success' : 'error');
+      return;
+    }
+    var p = valid[currentIndex];
+    var n = currentIndex + 1;
+    var text = codeArea.value;
+    var _m = findAnchor(text, p.find);
+    if (_m) {
+      codeArea.value = text.slice(0, _m.index) + p.replace + text.slice(_m.index + _m.length);
+      applied++;
+      updateBatchStatus('⏳ #' + n + ' ✓ · ' + applied + '/' + totalValid, 'empty');
+      log('Batch #' + n + ': ✓ diterapkan', 'success');
+    } else {
+      notFound++;
+      updateBatchStatus('⚠️ #' + n + ' tidak ketemu · lanjut...', 'error');
+      log('Batch #' + n + ': ❌ tidak ketemu', 'warn');
+    }
+    updateStats();
+    currentIndex++;
+    setTimeout(_applyNext, DELAY_MS);
   }
-
-  var msg = '✅ ' + applied + '/' + valid.length + ' diterapkan';
-if (notFound > 0) msg += ' · ' + notFound + ' tidak ketemu';
-if (skipped > 0) msg += ' · ' + skipped + ' overlap';
-if (invalid > 0) msg += ' · ' + invalid + ' dilewati';
-  updateBatchStatus(msg, applied > 0 ? 'empty' : 'error');
-  showToast('Batch: ' + applied + '/' + valid.length + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
-  log('Batch Replace: ' + applied + '/' + valid.length + ' diterapkan', applied > 0 ? 'success' : 'error');
+  setTimeout(_applyNext, 200);
 }
 
 function openBatchModal() {
@@ -5926,7 +6044,7 @@ batchInput.focus();
     if (!raw.trim()) { navUpdateStatus('Kosong — paste dulu hasil AI-nya', 'empty'); if (navDetail) { navDetail.innerHTML = ''; navDetail.style.display = 'none'; navDetail.classList.remove('show'); } return; }
     var pairs = parseBatchPairs(raw);
     if (pairs.length === 0) { navUpdateStatus('❌ Tidak ada blok CARI/GANTI', 'error'); return; }
-    var code = codeArea.value;
+    var simText = codeArea.value;
     var complete = 0, found = 0, notFound = 0, incomplete = 0;
     var detailItems = [];
     for (var i = 0; i < pairs.length; i++) {
@@ -5936,8 +6054,15 @@ batchInput.focus();
       var status, snippet;
       if (hasFind && hasReplace) {
         complete++;
-        if (findAnchor(code, p.find)) { found++; status = 'ok'; }
-        else { notFound++; status = 'miss'; }
+        var _m = findAnchor(simText, p.find);
+        if (_m) {
+          found++;
+          status = 'ok';
+          simText = simText.slice(0, _m.index) + p.replace + simText.slice(_m.index + _m.length);
+        } else {
+          notFound++;
+          status = 'miss';
+        }
         snippet = p.find;
       } else {
         incomplete++;
@@ -5987,40 +6112,47 @@ batchInput.focus();
     var confirmMsg = 'Terapkan ' + valid.length + ' perubahan ke kode?';
     if (invalid > 0) confirmMsg += '\n\n⚠️ ' + invalid + ' blok dilewati (tidak lengkap)';
     if (!confirm(confirmMsg)) return;
-    var text = codeArea.value;
+    if (navApply) navApply.disabled = true;
+    var applied = 0;
     var notFound = 0;
-    var ops = [];
-    for (var j = 0; j < valid.length; j++) {
-      var _m = findAnchor(text, valid[j].find);
-      if (!_m) { notFound++; continue; }
-      ops.push({ start: _m.index, end: _m.index + _m.length, replace: valid[j].replace });
+    var currentIndex = 0;
+    var DELAY_MS = 1500;
+    var totalValid = valid.length;
+    navUpdateStatus('⏳ 0/' + totalValid + ' · mulai...', 'empty');
+
+    function _navApplyNext() {
+      if (currentIndex >= totalValid) {
+        if (navApply) navApply.disabled = false;
+        afterCodeChange();
+        updateMatchInfo();
+        var _msg = '✅ ' + applied + '/' + totalValid + ' diterapkan';
+        if (notFound > 0) _msg += ' · ' + notFound + ' tidak ketemu';
+        if (invalid > 0) _msg += ' · ' + invalid + ' dilewati';
+        navUpdateStatus(_msg, applied > 0 ? 'empty' : 'error');
+        showToast('Batch selesai: ' + applied + '/' + totalValid + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
+        log('Batch Replace (nav): ' + applied + '/' + totalValid + ' diterapkan (berurutan)', applied > 0 ? 'success' : 'error');
+        navPreviewFn();
+        return;
+      }
+      var p = valid[currentIndex];
+      var n = currentIndex + 1;
+      var text = codeArea.value;
+      var _m = findAnchor(text, p.find);
+      if (_m) {
+        codeArea.value = text.slice(0, _m.index) + p.replace + text.slice(_m.index + _m.length);
+        applied++;
+        navUpdateStatus('⏳ #' + n + ' ✓ · ' + applied + '/' + totalValid, 'empty');
+        log('Batch #' + n + ': ✓ diterapkan (nav)', 'success');
+      } else {
+        notFound++;
+        navUpdateStatus('⚠️ #' + n + ' tidak ketemu · lanjut...', 'error');
+        log('Batch #' + n + ': ❌ tidak ketemu (nav)', 'warn');
+      }
+      updateStats();
+      currentIndex++;
+      setTimeout(_navApplyNext, DELAY_MS);
     }
-    ops.sort(function(a, b) { return a.start - b.start; });
-    var kept = [];
-    var lastEnd = -1;
-    for (var k = 0; k < ops.length; k++) {
-      if (ops[k].start >= lastEnd) { kept.push(ops[k]); lastEnd = ops[k].end; }
-    }
-    kept.sort(function(a, b) { return b.start - a.start; });
-    for (var m = 0; m < kept.length; m++) {
-      var op = kept[m];
-      text = text.slice(0, op.start) + op.replace + text.slice(op.end);
-    }
-    var applied = kept.length;
-    var skipped = ops.length - kept.length;
-    if (applied > 0) {
-      codeArea.value = text;
-      afterCodeChange();
-      updateMatchInfo();
-    }
-    var msg = '✅ ' + applied + '/' + valid.length + ' diterapkan';
-    if (notFound > 0) msg += ' · ' + notFound + ' tidak ketemu';
-    if (skipped > 0) msg += ' · ' + skipped + ' overlap';
-    if (invalid > 0) msg += ' · ' + invalid + ' dilewati';
-    navUpdateStatus(msg, applied > 0 ? 'empty' : 'error');
-    showToast('Batch: ' + applied + '/' + valid.length + ' berhasil', applied > 0 ? 'success' : 'error', 3500);
-    log('Batch Replace (nav): ' + applied + '/' + valid.length + ' diterapkan', applied > 0 ? 'success' : 'error');
-    navPreviewFn();
+    setTimeout(_navApplyNext, 200);
   }
 
   if(navPreview) navPreview.addEventListener('click', navPreviewFn);
@@ -6035,7 +6167,7 @@ batchInput.focus();
   });
   if(navClear) navClear.addEventListener('click', function(){
     if(!navInput.value){ showToast('Sudah kosong','info'); return; }
-    navInput.value=''; navUpdateStatus('—','empty'); if(navDetail){ navDetail.innerHTML=''; navDetail.classList.remove('show'); } navInput.focus();
+    navInput.value=''; navUpdateStatus('—','empty'); if(navDetail){ navDetail.innerHTML=''; navDetail.classList.remove('show'); navDetail.style.display='none'; } navInput.focus();
   });
   navInput.addEventListener('input', function(){ clearTimeout(navInput._t); navInput._t=setTimeout(navPreviewFn, 600); });
 })();
@@ -6047,7 +6179,128 @@ renderLog();
   setSaveStatus('saved');
   updateMatchInfo();
   renderAnalysisEmpty();
-switchTab('home');
+  /* ============ MINI LIVE PREVIEW - FINAL v5 ANTI BOCOR ============ */
+  (function() {
+    var floatWin = document.getElementById('miniLiveFloat');
+    var header = document.getElementById('mlHeader');
+    var closeBtn = document.getElementById('mlCloseBtn');
+    var frame = document.getElementById('miniLiveFrame');
+    var saveBtn = document.getElementById('saveHtmlBtn');
+    var bodyEl = document.getElementById('mlBody');
+    var viewportEl = document.getElementById('mlViewport');
+    var zoomInBtn = document.getElementById('mlZoomInBtn');
+    var zoomOutBtn = document.getElementById('mlZoomOutBtn');
+    if (!floatWin || !saveBtn) return;
+    var isOpen = false;
+    var zoom = 1;
+    function applyZoom() {
+      if (!viewportEl) return;
+      viewportEl.style.zoom = zoom;
+      viewportEl.style.transform = 'none';
+      viewportEl.style.transformOrigin = 'top left';
+      viewportEl.style.height = '800px';
+    }
+    function updatePreview() {
+      if (!isOpen || !frame) return;
+      var code = (typeof codeArea !== 'undefined' ? codeArea.value : '').trim();
+      var empty = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=390,initial-scale=1"><style>html,body{margin:0;padding:0;width:390px;overflow-x:hidden;box-sizing:border-box} body{padding:20px;background:#0f1117;color:#f1f5f9;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;font-family:sans-serif} *{max-width:100%;box-sizing:border-box;word-wrap:break-word;overflow-wrap:break-word}</style></head><body><div><div style="font-size:36px">⚡</div><div style="font-weight:700;color:#00FF88">Live Preview Siap</div><div style="font-size:12px;color:#a8b0c2;margin-top:6px">Ketik HTML di sini<br>Bisa scroll naik turun</div></div></body></html>';
+      var htmlCode = code ? code : empty;
+      try {
+        // ANTI BOCOR INJECTION - paksa semua konten tidak melebihi 390px
+        var lock = '<style>html{width:390px!important;max-width:390px!important;overflow-x:hidden!important;box-sizing:border-box!important} body{width:390px!important;max-width:390px!important;overflow-x:hidden!important;margin:0!important;padding:12px!important;box-sizing:border-box!important} *{max-width:100%!important;box-sizing:border-box!important;word-wrap:break-word!important;overflow-wrap:break-word!important;word-break:break-word!important} img,video,iframe,table,pre,code{max-width:390px!important;max-width:100%!important;overflow:hidden!important} pre,code{white-space:pre-wrap!important;word-break:break-all!important} a,button{pointer-events:none!important}</style><meta name="viewport" content="width=390,initial-scale=1">';
+        if (htmlCode.indexOf('</head>') !== -1) htmlCode = htmlCode.replace('</head>', lock + '</head>');
+        else if (htmlCode.indexOf('<head>') !== -1) htmlCode = htmlCode.replace('<head>', '<head>' + lock);
+        else htmlCode = lock + htmlCode;
+      } catch(e) {}
+      frame.srcdoc = htmlCode;
+      frame.style.height = '800px';
+    }
+    window._mlUpdate = updatePreview;
+    saveBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      isOpen = !isOpen;
+      if (isOpen) {
+        floatWin.classList.add('show');
+        updatePreview();
+        if (bodyEl) bodyEl.scrollTop = 0;
+        if (typeof showToast === 'function') showToast('Live Preview dibuka', 'info');
+      } else {
+        floatWin.classList.remove('show');
+      }
+    });
+    if (closeBtn) closeBtn.addEventListener('click', function() { isOpen = false; floatWin.classList.remove('show'); });
+    if (zoomInBtn) zoomInBtn.addEventListener('click', function(e) { e.stopPropagation(); zoom = Math.round(Math.min(2, zoom + 0.1) * 10) / 10; applyZoom(); });
+    if (zoomOutBtn) zoomOutBtn.addEventListener('click', function(e) { e.stopPropagation(); zoom = Math.round(Math.max(0.3, zoom - 0.1) * 10) / 10; applyZoom(); });
+    if (typeof codeArea !== 'undefined' && codeArea) {
+      codeArea.addEventListener('input', function() {
+        if (isOpen) { clearTimeout(window._mlTimer); window._mlTimer = setTimeout(updatePreview, 300); }
+      });
+    }
+    var dragging = false, sx, sy, ix, iy;
+    function clampNum(v, a, b) { return v < a ? a : (v > b ? b : v); }
+    function clampPos(left, top) {
+      var m = 8;
+      var w = floatWin.offsetWidth || 340;
+      var h = floatWin.offsetHeight || 440;
+      var maxL = Math.max(m, window.innerWidth - w - m);
+      var maxT = Math.max(m, window.innerHeight - h - m);
+      return { left: clampNum(left, m, maxL), top: clampNum(top, m, maxT) };
+    }
+    function dStart(e) {
+      var t = e.target; if (t.closest && t.closest('button')) return;
+      var _cx = (e.clientX != null) ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      var _cy = (e.clientY != null) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : null);
+      if (_cx == null || _cy == null) return;
+      dragging = true;
+      var cx = _cx, cy = _cy;
+      sx = cx; sy = cy;
+      var r = floatWin.getBoundingClientRect(); ix = r.left; iy = r.top;
+      floatWin.style.left = ix + 'px'; floatWin.style.top = iy + 'px';
+      floatWin.style.right = 'auto'; floatWin.style.bottom = 'auto';
+      floatWin.style.transition = 'none';
+      document.addEventListener('mousemove', dMove);
+      document.addEventListener('touchmove', dMove, {passive:false});
+      document.addEventListener('mouseup', dEnd);
+      document.addEventListener('touchend', dEnd);
+      document.addEventListener('touchcancel', dEnd);
+      if (header) header.style.cursor = 'grabbing';
+      e.preventDefault();
+    }
+    function dMove(e) {
+      if (!dragging) return;
+      if (e.cancelable) e.preventDefault();
+      var cx = (e.clientX != null) ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      var cy = (e.clientY != null) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : null);
+      if (cx == null || cy == null) return;
+      var _p = clampPos(ix + cx - sx, iy + cy - sy);
+      floatWin.style.left = _p.left + 'px';
+      floatWin.style.top = _p.top + 'px';
+    }
+    function dEnd() {
+      dragging = false;
+      document.removeEventListener('mousemove', dMove);
+      document.removeEventListener('touchmove', dMove);
+      document.removeEventListener('mouseup', dEnd);
+      document.removeEventListener('touchend', dEnd);
+      document.removeEventListener('touchcancel', dEnd);
+      floatWin.style.transition = '';
+      if (header) header.style.cursor = 'grab';
+    }
+    if (header) { header.addEventListener('mousedown', dStart); header.addEventListener('touchstart', dStart, {passive:false}); }
+    window.addEventListener('resize', function() {
+      if (!floatWin.classList.contains('show')) return;
+      var _r = floatWin.getBoundingClientRect();
+      var _p = clampPos(_r.left, _r.top);
+      if (_r.left !== _p.left || _r.top !== _p.top) {
+        floatWin.style.left = _p.left + 'px';
+        floatWin.style.top = _p.top + 'px';
+        floatWin.style.right = 'auto';
+        floatWin.style.bottom = 'auto';
+      }
+    });
+  })();
+
+  switchTab('home');
 
 /* Reorder tab Find: Cari → Opsi → Ganti → Aksi → Info → Nav → Pratinjau → Footer */
 (function() {
@@ -6078,8 +6331,9 @@ rowWrap.className = 'match-info-row';
 info.parentNode.insertBefore(rowWrap, info);
 rowWrap.appendChild(navPrev);
 rowWrap.appendChild(info);
+rowWrap.appendChild(document.getElementById('matchCounter'));
 rowWrap.appendChild(navNext);
-nav.style.display = 'none';
+nav.remove();
 })();
 
 })();
