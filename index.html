@@ -352,14 +352,14 @@
   [data-theme^="dark-"] textarea,
   [data-theme^="dark"] input[type="text"],
   [data-theme^="dark-"] input[type="text"] {
-    color: #86efac !important; /* hijau mint terang - kontras tinggi di gelap */
-    caret-color: #4ade80;
+    color: #00FF88 !important; /* hijau mint terang - kontras tinggi di gelap */
+    caret-color: #00FF88;
   }
   [data-theme^="dark"] #codeArea::selection,
   [data-theme^="dark"] #toolsCodeArea::selection,
   [data-theme^="dark"] .br-textarea::selection,
   [data-theme^="dark"] .field-input::selection {
-    background: rgba(74,222,128,0.25);
+    background: rgba(0,255,136,0.30);
     color: #dcfce7;
   }
   /* Light theme: hijau tua biar jelas di background putih */
@@ -385,6 +385,20 @@
     background: rgba(16,185,129,0.2);
     color: #064e3b;
   }
+
+  [data-theme^="dark"] #codeArea,
+  [data-theme^="dark"] #toolsCodeArea,
+  [data-theme^="dark"] .br-textarea {
+    text-shadow: 0 0 6px rgba(0,255,136,0.35), 0 0 12px rgba(0,255,136,0.15);
+    font-weight: 500;
+  }
+  [data-theme^="light"] #codeArea,
+  [data-theme^="light"] #toolsCodeArea,
+  [data-theme^="light"] .br-textarea {
+    color: #00a651 !important;
+    text-shadow: 0 0 8px rgba(0,200,100,0.25);
+  }
+
 
 
 
