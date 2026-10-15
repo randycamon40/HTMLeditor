@@ -94,15 +94,13 @@
     flex: 1; background: #0f1117; border: 1px solid var(--border); border-radius: 10px; min-height: 0;
     overflow: auto; position: relative; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;
     scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-    /* ANTI BOCOR */
-    contain: content;
+    overscroll-behavior: contain;
   }
   .ml-body::-webkit-scrollbar { width: 6px; height: 6px; }
   .ml-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   .ml-viewport {
     width: 390px; min-height: 800px; background: white; transform-origin: top left;
     overflow: hidden; /* cegah bocor */
-    contain: content;
   }
   #miniLiveFrame {
     width: 100%; height: 800px; border: none; background: white; display: block;
@@ -5095,16 +5093,30 @@ if (tab === 'tools') {
   async function updateFolderStatusUI() {
     var el = document.getElementById('folderStatus');
     if (!el) return;
+    var savedName = '';
+    try { savedName = localStorage.getItem('hp_folder_name') || ''; } catch(e) {}
     try {
       var h = await idbGetCustomFolder();
       if (h && h.name) {
         var perm = await h.queryPermission({mode:'readwrite'}).catch(function(){return 'unknown';});
-        el.textContent = 'Folder aktif: ' + h.name + ' (' + perm + ') - Save akan ke sini, bukan Download';
+        if (perm === 'granted') {
+          el.textContent = '✓ Folder aktif: ' + h.name + ' — Save akan ke sini';
+        } else if (perm === 'prompt') {
+          el.textContent = '⚠️ Folder "' + h.name + '" perlu diaktifkan ulang. Tap "Pilih Folder" lalu izinkan akses.';
+        } else {
+          el.textContent = '⚠️ Folder "' + h.name + '" tidak bisa diakses. Tap "Pilih Folder" untuk pilih ulang.';
+        }
+      } else if (savedName) {
+        el.textContent = '⚠️ Folder "' + savedName + '" hilang dari penyimpanan. Tap "Pilih Folder" untuk aktifkan ulang.';
       } else {
         el.textContent = 'Belum pilih folder. Default: /sdcard/Download';
       }
     } catch(e){
-      el.textContent = 'Belum pilih folder. Default: /sdcard/Download';
+      if (savedName) {
+        el.textContent = '⚠️ Folder "' + savedName + '" hilang dari penyimpanan. Tap "Pilih Folder" untuk aktifkan ulang.';
+      } else {
+        el.textContent = 'Belum pilih folder. Default: /sdcard/Download';
+      }
     }
   }
   async function saveBlobToCustomFolder(blob, filename) {
@@ -5177,6 +5189,29 @@ if (tab === 'tools') {
     var forgetBtn = document.getElementById('forgetFolderBtn');
     if (pickBtn) {
       pickBtn.addEventListener('click', async function(){
+        // Cek dulu apakah ada handle existing — mungkin tinggal re-grant permission
+        try {
+          var existing = await idbGetCustomFolder();
+          if (existing) {
+            var q = await existing.queryPermission({mode:'readwrite'});
+            if (q === 'granted') {
+              showToast('Folder sudah aktif: ' + existing.name, 'success');
+              updateFolderStatusUI();
+              return;
+            }
+            if (q === 'prompt') {
+              var r = await existing.requestPermission({mode:'readwrite'});
+              if (r === 'granted') {
+                try { localStorage.setItem('hp_folder_name', existing.name); } catch(e){}
+                showToast('✓ Folder "' + existing.name + '" diaktifkan kembali', 'success');
+                updateFolderStatusUI();
+                return;
+              }
+            }
+          }
+        } catch(e){}
+
+        // Kalau tidak ada / gagal, buka picker baru
         if (!window.showDirectoryPicker) {
           showToast('Browser ini belum support pilih folder. Pakai Chrome Android terbaru + PWA Install', 'warn');
           return;
@@ -5184,6 +5219,7 @@ if (tab === 'tools') {
         try {
           var handle = await window.showDirectoryPicker({mode:'readwrite'});
           await idbSetCustomFolder(handle);
+          try { localStorage.setItem('hp_folder_name', handle.name); } catch(e){}
           await updateFolderStatusUI();
           showToast('Folder "' + handle.name + '" disimpan. Semua Save akan ke sini', 'success');
         } catch(e){
@@ -5194,7 +5230,9 @@ if (tab === 'tools') {
     }
     if (forgetBtn) {
       forgetBtn.addEventListener('click', async function(){
+        if (!confirm('Hapus folder custom?\nSave akan kembali ke Download.')) return;
         await idbDeleteCustomFolder();
+        try { localStorage.removeItem('hp_folder_name'); } catch(e){}
         await updateFolderStatusUI();
         showToast('Folder custom dihapus, balik ke Download', 'info');
       });
@@ -6301,6 +6339,18 @@ renderLog();
         else if (htmlCode.indexOf('<head>') !== -1) htmlCode = htmlCode.replace('<head>', '<head>' + lock);
         else htmlCode = lock + htmlCode;
       } catch(e) {}
+      try {
+        var autoH = '<script>(function(){' +
+          'function send(){try{var h=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,800);parent.postMessage({type:"mlFrameHeight",h:h},"*");}catch(e){}}' +
+          'window.addEventListener("load",send);' +
+          'window.addEventListener("resize",send);' +
+          'if(window.MutationObserver){try{new MutationObserver(send).observe(document.documentElement,{childList:true,subtree:true,attributes:true});}catch(e){}}' +
+          'setInterval(send,1500);' +
+          'send();' +
+          '})();<\/script>';
+        if (htmlCode.indexOf('</body>') !== -1) htmlCode = htmlCode.replace('</body>', autoH + '</body>');
+        else htmlCode = htmlCode + autoH;
+      } catch(e) {}
       frame.srcdoc = htmlCode;
       frame.style.height = '800px';
     }
@@ -6376,6 +6426,13 @@ renderLog();
       if (header) header.style.cursor = 'grab';
     }
     if (header) { header.addEventListener('mousedown', dStart); header.addEventListener('touchstart', dStart, {passive:false}); }
+    window.addEventListener('message', function(ev) {
+      if (!ev.data || ev.data.type !== 'mlFrameHeight') return;
+      var h = parseInt(ev.data.h, 10);
+      if (!h || h < 100) return;
+      if (frame) frame.style.height = h + 'px';
+      if (viewportEl) viewportEl.style.minHeight = h + 'px';
+    });
     window.addEventListener('resize', function() {
       if (!floatWin.classList.contains('show')) return;
       var _r = floatWin.getBoundingClientRect();
