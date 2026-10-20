@@ -181,7 +181,7 @@ button{font-family:inherit}
 .hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px;padding:0 4px}
 
 /* ---------- Preview ---------- */
-#panel-preview{padding:0 10px;display:flex;flex-direction:column;overflow:hidden}
+#panel-preview{padding:0 10px calc(10px + var(--safe-bottom));display:flex;flex-direction:column;overflow:hidden}
 #panel-preview[hidden]{display:none}
 .preview-toolbar{padding:6px 2px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0}
 .preview-label{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;min-width:0}
@@ -196,7 +196,7 @@ button{font-family:inherit}
 .btn-sm:active{transform:scale(.95);background:var(--panel-2)}
 .btn-sm svg{width:14px;height:14px}
 .btn-sm.icon-only{padding:8px 11px}
-.preview-stage{flex:1;display:flex;overflow:hidden;background:var(--panel-3);border:1px solid var(--border);border-radius:var(--r-lg);min-height:0;justify-content:center;align-items:center;position:relative;margin-bottom:calc(10px + var(--safe-bottom))}
+.preview-stage{flex:1;display:flex;overflow:hidden;background:var(--panel-3);border:1px solid var(--border);border-radius:var(--r-lg);min-height:0;justify-content:center;align-items:center;position:relative}
 .preview-frame-wrap{flex:0 0 auto;width:100%;max-width:100%;height:100%;min-height:0;background:#fff;transition:all .35s var(--ease);display:flex;position:relative;overflow:hidden}
 .preview-frame-wrap[data-device="desktop"]{width:100%;height:100%;min-height:100%;align-self:stretch;border-radius:0}
 .preview-frame-wrap[data-device="mobile"]{width:360px;min-width:360px;max-width:360px;aspect-ratio:9/20;height:auto;max-height:calc(100% - 24px);margin:auto;border-radius:32px;border:solid #05080b;border-width:10px 5px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
@@ -399,6 +399,47 @@ body.preview-fs .app-header{display:none}
 .toast.warn{border-left:5px solid var(--warn)}
 .toast.info{border-left:5px solid var(--accent)}
 .toast.fade-out{animation:fade .25s reverse forwards}
+
+/* ---------- Browser picker modal ---------- */
+.browser-list{display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow-y:auto;margin:0 -4px;padding:0 4px;overscroll-behavior:contain}
+.browser-item{display:flex;align-items:center;gap:12px;padding:11px 12px;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);cursor:pointer;text-align:left;width:100%;transition:transform .1s,background .15s,border-color .15s;font-family:inherit}
+.browser-item:active{transform:scale(.98);background:var(--panel-3);border-color:var(--accent)}
+.bi-icon{flex-shrink:0;width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent)}
+.bi-icon svg{width:18px;height:18px;display:block}
+.bi-text{display:flex;flex-direction:column;min-width:0;flex:1}
+.bi-name{font-weight:700;font-size:13.5px;line-height:1.2}
+.bi-desc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
+.browser-note{padding:10px 12px;margin-top:8px;background:color-mix(in srgb,var(--accent) 10%,var(--panel-2));border:1px dashed color-mix(in srgb,var(--accent) 40%,var(--border));border-radius:var(--r-md);font-size:11.5px;line-height:1.45;color:var(--text)}
+
+/* ---------- Console panel (preview) ---------- */
+.console-panel{flex-shrink:0;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-md);margin-top:8px;max-height:35vh;min-height:120px;overflow:hidden;animation:rise .2s var(--ease)}
+.console-panel[hidden]{display:none}
+.console-header{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--panel-2);border-bottom:1px solid var(--border);flex-shrink:0;gap:6px}
+.console-title{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:var(--text)}
+.console-title svg{width:13px;height:13px;color:var(--accent)}
+.console-count{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);padding:1px 7px;border-radius:99px;min-width:22px;text-align:center;transition:all .2s}
+.console-count.has-error{color:var(--danger);background:color-mix(in srgb,var(--danger) 15%,transparent)}
+.console-actions{display:flex;gap:4px;align-items:center}
+.console-clear-btn,.console-close-btn{width:26px;height:26px;border-radius:50%;background:var(--panel);border:1px solid var(--border);color:var(--text);cursor:pointer;display:grid;place-items:center;padding:0}
+.console-clear-btn:active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.console-close-btn:active{background:var(--danger);color:#fff;border-color:var(--danger)}
+.console-body{flex:1;overflow-y:auto;padding:5px 6px;font-family:var(--mono);font-size:11px;line-height:1.45;-webkit-overflow-scrolling:touch;min-height:0;overscroll-behavior:contain}
+.console-empty{text-align:center;color:var(--muted);padding:16px 8px;font-size:11.5px}
+.console-line{display:flex;gap:6px;align-items:flex-start;padding:4px 7px;border-radius:6px;margin-bottom:2px;background:var(--panel-3);word-break:break-word;border-left:3px solid var(--muted)}
+.console-line:last-child{margin-bottom:0}
+.console-line.info{border-left-color:var(--accent)}
+.console-line.warn{border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 8%,var(--panel-3))}
+.console-line.error{border-left-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--panel-3))}
+.console-icon{flex-shrink:0;font-weight:800;min-width:10px;text-align:center;font-size:11px}
+.console-line.log .console-icon{color:var(--muted)}
+.console-line.info .console-icon{color:var(--accent)}
+.console-line.warn .console-icon{color:var(--warn)}
+.console-line.error .console-icon{color:var(--danger)}
+.console-msg{flex:1;min-width:0;word-break:break-word;white-space:pre-wrap;color:var(--text)}
+.console-line.warn .console-msg{color:var(--warn)}
+.console-line.error .console-msg{color:var(--danger)}
+.console-time{flex-shrink:0;font-size:9.5px;color:var(--muted);padding-top:1px}
+#consoleToggleBtn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 
 /* ---------- Floating live preview ---------- */
 #miniLiveFloat{position:fixed;top:80px;right:16px;width:340px;height:440px;min-width:120px;min-height:140px;max-width:92vw;max-height:88vh;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 24px 60px var(--shadow);z-index:9990;display:flex;flex-direction:column;resize:both;overflow:hidden;opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .2s,transform .2s;pointer-events:none;padding:8px;gap:6px}
@@ -635,6 +676,12 @@ body.preview-fs .app-header{display:none}
         </div>
       </div>
       <div class="preview-tools">
+        <button class="btn-sm icon-only" id="consoleToggleBtn" title="Toggle Console">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+        </button>
         <button class="btn-sm icon-only" id="fullscreenBtn" title="Fullscreen">
           <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></svg>
         </button>
@@ -650,6 +697,29 @@ body.preview-fs .app-header{display:none}
     <div class="preview-stage">
       <div class="preview-frame-wrap" id="previewWrap" data-device="desktop">
         <iframe id="previewFrame" sandbox="allow-scripts allow-modals allow-forms allow-popups"></iframe>
+      </div>
+    </div>
+    <div class="console-panel" id="consolePanel" hidden>
+      <div class="console-header">
+        <span class="console-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+          Console
+          <span class="console-count" id="consoleCount">0</span>
+        </span>
+        <div class="console-actions">
+          <button class="console-clear-btn" id="consoleClearBtn" type="button" title="Bersihkan console">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+          <button class="console-close-btn" id="consoleCloseBtn" type="button" title="Tutup console">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="console-body" id="consoleBody">
+        <div class="console-empty">Belum ada output dari preview</div>
       </div>
     </div>
   </section>
@@ -1190,6 +1260,64 @@ teks baru"></textarea>
       <button class="find-modal-nav-btn" id="promptEditorReset" type="button" style="flex:0 0 auto;width:auto;padding:0 14px;font-size:12px;font-weight:600">↺ Reset</button>
       <button class="find-modal-nav-btn" id="promptEditorSave" type="button" style="flex:1;background:var(--accent);color:white;border-color:var(--accent);font-size:12.5px;font-weight:700">💾 Simpan</button>
     </div>
+  </div>
+</div>
+
+<!-- ============ BROWSER PICKER MODAL ============ -->
+<div class="find-modal" id="browserModal" hidden>
+  <button class="find-modal-backdrop" id="browserModalBackdrop" type="button" aria-label="Tutup"></button>
+  <div class="find-modal-box" role="dialog" aria-label="Buka di Browser">
+    <div class="find-modal-header">
+      <span class="find-modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        Buka di Browser
+      </span>
+      <button class="find-modal-close" id="browserModalClose" type="button" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="browser-list" id="browserList">
+      <button class="browser-item" data-browser="default" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><circle cx="6.5" cy="6.5" r="0.6" fill="currentColor"/><circle cx="8.8" cy="6.5" r="0.6" fill="currentColor"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Tab Baru (bawaan)</span><span class="bi-desc">Buka di tab baru aplikasi ini</span></span>
+      </button>
+      <button class="browser-item" data-browser="share" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Buka dengan... (Share)</span><span class="bi-desc">Pilih browser dari daftar aplikasi Android</span></span>
+      </button>
+      <button class="browser-item" data-browser="chrome" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><line x1="12" y1="8.5" x2="12" y2="3"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Chrome</span><span class="bi-desc">Buka langsung di Chrome</span></span>
+      </button>
+      <button class="browser-item" data-browser="firefox" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 13c0-4 3-6 5-6 1 0 2 .5 2.5 1.5"/><path d="M14.5 14.5c-2 0-3-1-3-3"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Firefox</span><span class="bi-desc">Buka langsung di Firefox</span></span>
+      </button>
+      <button class="browser-item" data-browser="edge" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.5 10.5c3-2 6-2 8.5 0s5.5 2 8.5 0"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Microsoft Edge</span><span class="bi-desc">Buka langsung di Edge</span></span>
+      </button>
+      <button class="browser-item" data-browser="opera" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3" ry="6"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Opera</span><span class="bi-desc">Buka langsung di Opera</span></span>
+      </button>
+      <button class="browser-item" data-browser="kiwi" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><line x1="12" y1="8" x2="12" y2="9"/><line x1="16" y1="12" x2="15" y2="12"/><line x1="12" y1="16" x2="12" y2="15"/><line x1="8" y1="12" x2="9" y2="12"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Kiwi Browser</span><span class="bi-desc">Buka langsung di Kiwi Browser</span></span>
+      </button>
+      <button class="browser-item" data-browser="save" type="button">
+        <span class="bi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+        <span class="bi-text"><span class="bi-name">Simpan HTML</span><span class="bi-desc">Simpan file untuk dibuka manual</span></span>
+      </button>
+    </div>
+    <div class="browser-note">💡 <b>Tab Baru</b> = paling stabil. <b>Share</b> = pilih aplikasi/browser Android (reliable). Browser spesifik kadang gagal tergantung browser terinstall & ukuran kode.</div>
   </div>
 </div>
 
@@ -3167,31 +3295,120 @@ if (tab === 'tools') {
   }
 
   /* ============ OPEN IN BROWSER ============ */
+  var browserModal = $('browserModal');
+  var browserModalClose = $('browserModalClose');
+  var browserModalBackdrop = $('browserModalBackdrop');
+  var browserList = $('browserList');
+
   function openInBrowser() {
     var code = codeArea.value.trim();
     if (!code) { showToast('Belum ada kode untuk dibuka', 'warn'); return; }
-    try {
-      var blob = new Blob([code], { type: 'text/html;charset=utf-8' });
-      var url = URL.createObjectURL(blob);
-      var win = null;
-      try { win = window.open(url, '_blank', 'noopener'); } catch (e) {}
-      if (!win) {
-        var a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        try { a.click(); } catch (e) {}
-        setTimeout(function() { if (a.parentNode) a.parentNode.removeChild(a); }, 200);
+    if (!browserModal) { doOpenInBrowser('default'); return; }
+    browserModal.hidden = false;
+  }
+
+  function closeBrowserModal() {
+    if (browserModal) browserModal.hidden = true;
+  }
+
+  function doOpenInBrowser(choice) {
+    closeBrowserModal();
+    var code = codeArea.value.trim();
+    if (!code) { showToast('Belum ada kode untuk dibuka', 'warn'); return; }
+
+    if (choice === 'default') {
+      try {
+        var blob = new Blob([code], { type: 'text/html;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var win = null;
+        try { win = window.open(url, '_blank', 'noopener'); } catch (e) {}
+        if (!win) {
+          var a = document.createElement('a');
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          try { a.click(); } catch (e) {}
+          setTimeout(function() { if (a.parentNode) a.parentNode.removeChild(a); }, 200);
+        }
+        setTimeout(function() { try { URL.revokeObjectURL(url); } catch (e) {} }, 60000);
+        showToast('Membuka di tab baru...', 'info');
+        log('Buka di tab baru (' + code.length + ' karakter)', 'info');
+      } catch (e) {
+        showToast('Gagal buka: ' + (e.message || e), 'error');
       }
-      setTimeout(function() { try { URL.revokeObjectURL(url); } catch (e) {} }, 60000);
-      showToast('Membuka di browser...', 'info');
-      log('Buka di browser (' + code.length + ' karakter)', 'info');
-    } catch (e) {
-      showToast('Gagal buka browser: ' + (e.message || e), 'error');
-      log('Gagal buka browser: ' + (e.message || e), 'error');
+      return;
     }
+
+    if (choice === 'share') {
+      try {
+        var blob2 = new Blob([code], { type: 'text/html;charset=utf-8' });
+        var fname = 'playground-' + Date.now() + '.html';
+        var file = new File([blob2], fname, { type: 'text/html' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'HTML Preview' })
+            .then(function() { log('Share file HTML — pilih browser', 'info'); })
+            .catch(function(err) {
+              if (err && err.name === 'AbortError') return;
+              showToast('Share gagal: ' + (err.message || err), 'error');
+            });
+          return;
+        }
+        showToast('Share file tidak didukung — pakai Tab Baru', 'warn', 3500);
+      } catch (e) {
+        showToast('Share gagal: ' + (e.message || e), 'error');
+      }
+      return;
+    }
+
+    if (choice === 'save') {
+      var saveBtn = $('saveBtn');
+      if (saveBtn) saveBtn.click();
+      return;
+    }
+
+    var packages = {
+      'chrome': 'com.android.chrome',
+      'firefox': 'org.mozilla.firefox',
+      'edge': 'com.microsoft.emmx',
+      'opera': 'com.opera.browser',
+      'kiwi': 'com.kiwibrowser.browser'
+    };
+    var pkg = packages[choice];
+    if (!pkg) { doOpenInBrowser('default'); return; }
+
+    try {
+      var encoded = encodeURIComponent(code);
+      if (encoded.length > 300000) {
+        showToast('Kode terlalu besar untuk intent — pakai Tab Baru atau Share', 'warn', 4000);
+        return;
+      }
+      var intentUrl = 'intent://' + encoded +
+        '#Intent;scheme=data;action=android.intent.action.VIEW;type=text/html;package=' + pkg + ';end';
+      window.location.href = intentUrl;
+      var t0 = Date.now();
+      setTimeout(function() {
+        if (Date.now() - t0 < 3000 && document.visibilityState === 'visible') {
+          showToast('Browser tidak terbuka. Coba "Share" atau "Tab Baru"', 'warn', 4000);
+        }
+      }, 1800);
+      log('Buka di ' + choice + ' via intent', 'info');
+    } catch (e) {
+      showToast('Gagal buka di ' + choice + ': ' + (e.message || e), 'error');
+    }
+  }
+
+  if (browserModalClose) browserModalClose.addEventListener('click', closeBrowserModal);
+  if (browserModalBackdrop) browserModalBackdrop.addEventListener('click', closeBrowserModal);
+  if (browserList) {
+    browserList.addEventListener('click', function(e) {
+      var item = e.target.closest('.browser-item');
+      if (!item) return;
+      var choice = item.getAttribute('data-browser');
+      if (!choice) return;
+      doOpenInBrowser(choice);
+    });
   }
 
   /* ============ QUICK FIND (Beranda) ============ */
@@ -3352,10 +3569,136 @@ if (tab === 'tools') {
       
     if (!findModal.hidden) { closeFindModal(); return; }
     if (batchModal && !batchModal.hidden) { closeBatchModal(); return; }
+    if (browserModal && !browserModal.hidden) { closeBrowserModal(); return; }
   }
 });
 
   /* ============ PREVIEW ============ */
+  // Inject console capture script ke iframe preview (paling awal di <head>)
+  function injectConsoleCapture(html) {
+    if (!html) return html;
+    if (html.indexOf('__hpConsoleCap') !== -1) return html;
+    var capScript = '<script>/*__hpConsoleCap*/(function(){' +
+      'if(window.__hpConsoleInstalled)return;window.__hpConsoleInstalled=true;' +
+      'function ser(a){' +
+        'try{' +
+          'if(a===null)return "null";' +
+          'if(a===undefined)return "undefined";' +
+          'if(typeof a==="string")return a;' +
+          'if(a instanceof Error)return (a.name||"Error")+": "+a.message;' +
+          'if(typeof a==="object"){try{return JSON.stringify(a);}catch(e){return Object.prototype.toString.call(a);}}' +
+          'return String(a);' +
+        '}catch(e){return "[unserializable]";}' +
+      '}' +
+      'function send(level,args){' +
+        'try{' +
+          'var parts=[];' +
+          'for(var i=0;i<args.length;i++){var s=ser(args[i]);if(s.length>2000)s=s.slice(0,2000)+"…";parts.push(s);}' +
+          'parent.postMessage({__hpConsole:1,level:level,msg:parts.join(" ")}, "*");' +
+        '}catch(e){}' +
+      '}' +
+      'var orig={log:console.log,warn:console.warn,error:console.error,info:console.info,debug:console.debug};' +
+      '["log","warn","error","info","debug"].forEach(function(k){' +
+        'console[k]=function(){send(k,arguments);try{return orig[k].apply(console,arguments);}catch(e){}};' +
+      '});' +
+      'window.addEventListener("error",function(e){' +
+        'send("error",[e.message+" @ "+(e.filename||"")+":"+(e.lineno||0)+":"+(e.colno||0)]);' +
+      '});' +
+      'window.addEventListener("unhandledrejection",function(e){' +
+        'var r=e.reason;' +
+        'var m=(r&&r.message)?r.message:String(r);' +
+        'send("error",["Unhandled Promise: "+m]);' +
+      '});' +
+    '})();<\/script>';
+    var headMatch = html.match(/<head\b[^>]*>/i);
+    if (headMatch) {
+      var idx = html.indexOf(headMatch[0]) + headMatch[0].length;
+      return html.slice(0, idx) + capScript + html.slice(idx);
+    }
+    var htmlMatch = html.match(/<html\b[^>]*>/i);
+    if (htmlMatch) {
+      var idx2 = html.indexOf(htmlMatch[0]) + htmlMatch[0].length;
+      return html.slice(0, idx2) + capScript + html.slice(idx2);
+    }
+    var dtMatch = html.match(/<!DOCTYPE[^>]*>/i);
+    if (dtMatch) {
+      var idx3 = html.indexOf(dtMatch[0]) + dtMatch[0].length;
+      return html.slice(0, idx3) + capScript + html.slice(idx3);
+    }
+    return capScript + html;
+  }
+
+  // Console panel logic
+  var consolePanel = $('consolePanel');
+  var consoleBody = $('consoleBody');
+  var consoleToggleBtn = $('consoleToggleBtn');
+  var consoleClearBtn = $('consoleClearBtn');
+  var consoleCloseBtn = $('consoleCloseBtn');
+  var consoleCountEl = $('consoleCount');
+  var consoleOn = false;
+  var consoleLines = [];
+  var CONSOLE_MAX = 300;
+
+  function setConsoleOn(on) {
+    consoleOn = !!on;
+    if (consolePanel) consolePanel.hidden = !consoleOn;
+    if (consoleToggleBtn) consoleToggleBtn.classList.toggle('active', consoleOn);
+    try { safeSet('hp_console_on', consoleOn ? '1' : '0'); } catch(e){}
+    if (consoleOn) renderConsole();
+  }
+
+  function renderConsole() {
+    if (!consoleBody) return;
+    if (consoleLines.length === 0) {
+      consoleBody.innerHTML = '<div class="console-empty">Belum ada output dari preview</div>';
+      if (consoleCountEl) { consoleCountEl.textContent = '0'; consoleCountEl.classList.remove('has-error'); }
+      return;
+    }
+    var html = '';
+    var errCount = 0;
+    for (var i = 0; i < consoleLines.length; i++) {
+      var l = consoleLines[i];
+      if (l.level === 'error') errCount++;
+      var icon = { log: '›', info: 'i', warn: '!', error: '✕', debug: '·' }[l.level] || '›';
+      html += '<div class="console-line ' + l.level + '">' +
+        '<span class="console-icon">' + icon + '</span>' +
+        '<span class="console-time">' + l.time + '</span>' +
+        '<span class="console-msg">' + escapeHtml(l.msg) + '</span>' +
+      '</div>';
+    }
+    consoleBody.innerHTML = html;
+    if (consoleCountEl) {
+      consoleCountEl.textContent = consoleLines.length;
+      consoleCountEl.classList.toggle('has-error', errCount > 0);
+    }
+    try { consoleBody.scrollTop = consoleBody.scrollHeight; } catch(e){}
+  }
+
+  function addConsoleLine(level, msg) {
+    var d = new Date();
+    var time = padNum(d.getHours()) + ':' + padNum(d.getMinutes()) + ':' + padNum(d.getSeconds());
+    consoleLines.push({ level: level, msg: msg, time: time });
+    if (consoleLines.length > CONSOLE_MAX) consoleLines.shift();
+    if (consoleOn) renderConsole();
+  }
+
+  function clearConsole() {
+    consoleLines = [];
+    renderConsole();
+  }
+
+  window.addEventListener('message', function(ev) {
+    if (!ev.data || typeof ev.data !== 'object') return;
+    if (!ev.data.__hpConsole) return;
+    var level = ev.data.level || 'log';
+    if (['log','warn','error','info','debug'].indexOf(level) === -1) level = 'log';
+    addConsoleLine(level, String(ev.data.msg || ''));
+  });
+
+  if (consoleToggleBtn) consoleToggleBtn.addEventListener('click', function() { setConsoleOn(!consoleOn); });
+  if (consoleCloseBtn) consoleCloseBtn.addEventListener('click', function() { setConsoleOn(false); });
+  if (consoleClearBtn) consoleClearBtn.addEventListener('click', clearConsole);
+
   function renderPreview() {
     var code = codeArea.value.trim();
     var htmlCode = code ? code : EMPTY_PREVIEW;
@@ -3370,6 +3713,8 @@ if (tab === 'tools') {
         htmlCode = hideScrollStyle + htmlCode;
       }
     } catch(e) {}
+    htmlCode = injectConsoleCapture(htmlCode);
+    if (typeof clearConsole === 'function') clearConsole();
     previewFrame.srcdoc = htmlCode;
   }
 
@@ -4712,13 +5057,18 @@ batchInput.focus();
   navInput.addEventListener('input', function(){ clearTimeout(navInput._t); navInput._t=setTimeout(navPreviewFn, 600); });
 })();
 
-/* ============ INIT ============ */
+  /* ============ INIT ============ */
 renderLog();
   updateFullscreenIcon();
   resetHistory();
   setSaveStatus('saved');
   updateMatchInfo();
   renderAnalysisEmpty();
+  (function initConsolePref() {
+    var s = null;
+    try { s = localStorage.getItem('hp_console_on'); } catch(e){}
+    setConsoleOn(s === '1');
+  })();
   /* ============ MINI LIVE PREVIEW - FINAL v5 ANTI BOCOR ============ */
   (function() {
     var floatWin = document.getElementById('miniLiveFloat');
