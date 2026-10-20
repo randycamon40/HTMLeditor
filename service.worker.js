@@ -1,4 +1,4 @@
-const CACHE_NAME = 'htmleditor-v20';
+const CACHE_NAME = 'htmleditor-v20.0.1';
 const CACHE_ASSETS = [
   '/',
   '/index.html',
