@@ -5554,6 +5554,50 @@ nav.remove();
         } };
       }));
     }
+    async function shareFile(n) {
+      var b = await get('blobs', n.id);
+      var content = b ? b.content : '';
+      if (!content) { showToast('File kosong — tidak bisa dibagikan', 'warn'); return; }
+      try {
+        // Coba Web Share API dengan file (Android Chrome modern)
+        if (navigator.share) {
+          var blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+          var file = new File([blob], n.name, { type: 'text/html;charset=utf-8' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: n.name, text: 'Bagikan file: ' + n.name });
+            showToast('Berhasil dibagikan: ' + n.name, 'success');
+            log('Vault: bagikan file "' + path(n.id) + '" via share sheet', 'success');
+            return;
+          }
+          // Fallback share text jika file tidak didukung tapi share didukung
+          // Batasi panjang biar tidak crash di beberapa browser
+          if (content.length < 20000) {
+            try {
+              await navigator.share({ title: n.name, text: content });
+              showToast('Berhasil dibagikan: ' + n.name, 'success');
+              return;
+            } catch(e2) { /* lanjut ke fallback */ }
+          } else {
+            // untuk file besar, share hanya info + coba copy
+            try {
+              await navigator.share({ title: n.name, text: 'File HTML: ' + n.name + ' (' + formatSize(content.length) + ')\nBuka di HTML Playground.' });
+              return;
+            } catch(e2) {}
+          }
+        }
+        // Fallback: Clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(content);
+          showToast('Disalin ke clipboard — tempel di WA / lainnya', 'success');
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') { log('Bagikan dibatalkan user', 'info'); return; }
+        console.warn('shareFile error', e);
+      }
+      // Fallback terakhir: download / save ke folder custom
+      shareOrDownload(n.name, content, 'text/html;charset=utf-8');
+    }
     async function exportFile(n) { var b = await get('blobs', n.id); shareOrDownload(n.name, b ? b.content : '', 'text/html;charset=utf-8'); }
     async function importFiles(files) {
       var cnt = 0;
@@ -5595,7 +5639,7 @@ nav.remove();
         else it.push({ t: '📂 Buka folder', f: function () { cd(n.id); } });
         if (n.type === 'file') it.push({ t: '🕘 Riwayat versi', f: function () { history(n); } }, { t: n.fav ? '☆ Hapus dari favorit' : '★ Jadikan favorit', f: async function () { n.fav = !n.fav; await put('nodes', n); render(); } });
         it.push({ t: '✏ Ganti nama', f: function () { rename(n); } }, { t: '📁 Pindahkan', f: function () { move(n); } });
-        if (n.type === 'file') it.push({ t: '⧉ Duplikat', f: function () { dup(n); } }, { t: '⬇ Ekspor ke file', f: function () { exportFile(n); } });
+        if (n.type === 'file') it.push({ t: '⧉ Duplikat', f: function () { dup(n); } }, { t: '📤 Bagikan', f: function () { shareFile(n); } }, { t: '⬇ Ekspor ke file', f: function () { exportFile(n); } });
         it.push({ t: '🗑 Pindah ke Sampah', c: 'danger', f: function () { if (n.type === 'file' || confirm('Folder "' + n.name + '" beserta isinya dipindah ke Sampah?')) trash(n, true); } });
       }
       sheet(n.name, it);
