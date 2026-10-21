@@ -490,6 +490,38 @@ body.preview-fs .app-header{display:none}
 .code-row-1 span.code-divider:nth-of-type(2){display:none}
 #panel-home .mini-btn.save-html-btn{flex:1 1 100%}
 @media(max-width:440px){.preview-label>span:not(.live-dot){display:none}}
+
+/* ---------- Vault (IndexedDB) ---------- */
+.vt-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;font-size:12.5px;line-height:1.5;margin-bottom:10px;word-break:break-word}
+.vt-card b{color:var(--accent)}.vt-card .vt-x{color:var(--danger);font-weight:700;cursor:pointer;margin-left:6px}
+.vt-crumbs{display:flex;align-items:center;gap:2px;overflow-x:auto;white-space:nowrap;padding:2px 0 8px;font-size:12.5px;font-weight:700;scrollbar-width:none}
+.vt-crumbs::-webkit-scrollbar{display:none}
+.vt-crumbs button{background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:99px;padding:5px 11px;font:inherit;cursor:pointer;flex-shrink:0}
+.vt-crumbs button:last-child{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.vt-crumbs i{color:var(--muted);font-style:normal;padding:0 2px}
+.vt-bar{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.vt-bar .field-input{height:38px;padding:8px 12px;font-size:13px;font-family:var(--ui);flex:1;min-width:0}
+.vt-seg{display:flex;gap:6px;margin-bottom:8px}
+.vt-seg button{flex:1;background:var(--panel);border:1px solid var(--border);color:var(--muted);border-radius:99px;padding:7px 4px;font-size:12px;font-weight:700;cursor:pointer}
+.vt-seg button.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.vt-list{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:4px;min-height:90px}
+.vt-empty{color:var(--muted);text-align:center;padding:28px 12px;font-size:12.5px}
+.vt-row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:var(--r-sm);cursor:pointer}
+.vt-row:active{background:var(--panel-2)}
+.vt-row.cur{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.vt-ic{font-size:22px;width:30px;text-align:center;flex-shrink:0}
+.vt-nm{flex:1;min-width:0}
+.vt-nm span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;font-weight:700}
+.vt-nm small{color:var(--muted);font-size:11px}
+.vt-dots{background:none;border:none;color:var(--muted);font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;flex-shrink:0}
+.vt-dots:active{background:var(--panel-3)}
+.vt-sheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center}
+.vt-sheet[hidden]{display:none}
+.vt-bd{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);border:none;animation:fade .15s}
+.vt-box{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:480px;max-height:75vh;overflow-y:auto;padding:14px 14px calc(14px + var(--safe-bottom));animation:sheetUp .22s var(--ease)}
+.vt-t{font-size:13px;font-weight:800;color:var(--muted);margin-bottom:8px;word-break:break-word}
+.vt-opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:var(--r-md);padding:12px 14px;margin-bottom:6px;font-size:14px;font-weight:600;cursor:pointer}
+.vt-opt:active{background:var(--accent);color:var(--on-accent)}.vt-opt.danger{color:var(--danger)}
 </style>
 </head>
 <body>
@@ -599,7 +631,11 @@ body.preview-fs .app-header{display:none}
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            <span>Import File</span>
+            <span>Import</span>
+          </button>
+          <button class="mini-btn" id="vtQuick" type="button" title="Simpan ke Vault (Ctrl+S)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"></path><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"></path></svg>
+            <span>Vault</span>
           </button>
 
           <span class="code-divider"></span>
@@ -1005,6 +1041,14 @@ teks baru"></textarea>
       </svg>
       Import Backup (JSON)
     </button>
+
+    <button class="btn small full" id="forceUpdateBtn" title="Hapus cache & muat ulang aplikasi (data tetap aman)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+      Force Update (Bersihkan Cache)
+    </button>
     <input type="file" id="jsonInput" accept=".json,application/json" hidden>
 
     <!-- === FOLDER PILIHAN CUSTOM - HANYA TAMBAHAN LOKASI SIMPAN === -->
@@ -1065,6 +1109,36 @@ teks baru"></textarea>
     </div>
   </section>
 
+
+  <!-- ============ VAULT (IndexedDB) ============ -->
+  <section class="tab-panel" id="panel-vault" hidden>
+    <div class="section-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"></path><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"></path></svg>
+      Vault Proyek
+    </div>
+    <div class="vt-card" id="vtActive"></div>
+    <div class="actions-row">
+      <button class="btn small primary" id="vtSave" type="button">💾 Simpan ke Vault</button>
+      <button class="btn small" id="vtSaveAs" type="button">📄 Simpan Sebagai</button>
+    </div>
+    <div class="vt-crumbs" id="vtCrumbs"></div>
+    <div class="vt-bar">
+      <input class="field-input" id="vtSearch" type="search" placeholder="Cari nama file/folder..." autocomplete="off" spellcheck="false">
+      <button class="mini-btn" id="vtNewFolder" type="button" title="Folder baru">📁+</button>
+      <button class="mini-btn" id="vtImport" type="button" title="Import file ke Vault">⬆</button>
+      <button class="mini-btn" id="vtMore" type="button" title="Lainnya">⋯</button>
+    </div>
+    <div class="vt-seg" id="vtSeg">
+      <button data-v="all" class="on" type="button">Semua</button>
+      <button data-v="fav" type="button">★ Favorit</button>
+      <button data-v="trash" type="button">🗑 Sampah</button>
+    </div>
+    <div class="vt-list" id="vtList"></div>
+    <div class="hint" id="vtStat">—</div>
+    <input type="file" id="vtFile" accept=".html,.htm,.txt,text/html" multiple hidden>
+    <input type="file" id="vtRestore" accept=".json,application/json" hidden>
+  </section>
+
 </main>
 
 <!-- ============ MENU DRAWER ============ -->
@@ -1083,6 +1157,12 @@ teks baru"></textarea>
     <div class="studio-sec">Warna aksen</div>
     <div class="swatches" id="swatches"></div>
   </div>
+</div>
+
+<!-- ============ VAULT SHEET ============ -->
+<div class="vt-sheet" id="vtSheet" hidden>
+  <button class="vt-bd" type="button" aria-label="Tutup"></button>
+  <div class="vt-box"><div class="vt-t"></div><div class="vt-b"></div></div>
 </div>
 
 <div class="menu-overlay" id="menuOverlay" hidden>
@@ -1126,6 +1206,14 @@ teks baru"></textarea>
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
         <polyline points="15 3 21 3 21 9"></polyline>
         <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </button>
+
+    <button class="menu-item" data-tab="vault" type="button" role="menuitem" title="Vault" aria-label="Vault">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+        <path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"></path>
+        <path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"></path>
       </svg>
     </button>
 
@@ -4178,6 +4266,36 @@ if (tab === 'tools') {
     e.target.value = '';
   });
 
+  /* ============ FORCE UPDATE (PWA cache clear) ============ */
+  $('forceUpdateBtn').addEventListener('click', async function() {
+    if (!confirm('Force Update?\n\nAkan:\n• Hapus cache aplikasi\n• Unregister service worker\n• Muat ulang halaman\n\nKode, Vault, tema, dan pengaturan TIDAK terhapus.\n\nLanjutkan?')) return;
+    var btn = $('forceUpdateBtn');
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+    showToast('Membersihkan cache...', 'info', 1500);
+    log('Force Update: mulai membersihkan', 'info');
+    var cleared = [];
+    try {
+      if ('serviceWorker' in navigator) {
+        var regs = await navigator.serviceWorker.getRegistrations();
+        for (var i = 0; i < regs.length; i++) { await regs[i].unregister(); }
+        if (regs.length) cleared.push(regs.length + ' service worker');
+      }
+    } catch(e) { console.warn('SW fail', e); }
+    try {
+      if ('caches' in window) {
+        var keys = await caches.keys();
+        for (var k = 0; k < keys.length; k++) { await caches.delete(keys[k]); }
+        if (keys.length) cleared.push(keys.length + ' cache');
+      }
+    } catch(e) { console.warn('Cache fail', e); }
+    showToast('Bersih: ' + (cleared.join(', ') || 'tidak ada cache') + '. Reload...', 'success', 1800);
+    log('Force Update: ' + (cleared.join(', ') || 'no cache'), 'success');
+    setTimeout(function() {
+      var base = window.location.href.split('?')[0].split('#')[0];
+      window.location.href = base + '?fu=' + Date.now();
+    }, 900);
+  });
+
   /* ============ TOOLS ============ */
   function renderAnalysisEmpty(msg) {
     analysisBox.innerHTML = '<div class="analysis-empty">' + (msg || 'Hasil analisis akan muncul di sini.<br>Tap <b>AutoLint</b> untuk memulai.') + '</div>';
@@ -5278,6 +5396,289 @@ rowWrap.appendChild(document.getElementById('matchCounter'));
 rowWrap.appendChild(navNext);
 nav.remove();
 })();
+
+  /* ============ VAULT — IndexedDB (nodes / blobs / revs) ============ */
+  (function () {
+    var DB = null, N = [], cwd = 'root', view = 'all', q = '';
+    var act = safeGet('hp_vault_active', ''), lastSaved = null, lastSnap = 0, busy = false;
+    var MAXREV = 20;
+    var vt = $('vtList');
+    function uid() { return 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function fmt(t) { return new Date(t).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+    function open() {
+      return new Promise(function (ok, no) {
+        if (!window.indexedDB) return no(new Error('IndexedDB tidak tersedia'));
+        var r = indexedDB.open('hp_vault_db', 1);
+        r.onupgradeneeded = function () {
+          var d = r.result; d.createObjectStore('nodes', { keyPath: 'id' }); d.createObjectStore('blobs', { keyPath: 'id' });
+          d.createObjectStore('revs', { keyPath: 'rid', autoIncrement: true }).createIndex('fid', 'fid');
+        };
+        r.onsuccess = function () { DB = r.result; ok(); };
+        r.onerror = function () { no(r.error); };
+      });
+    }
+    function tx(stores, mode, fn) {
+      return new Promise(function (ok, no) {
+        var t = DB.transaction(stores, mode), req = fn(t);
+        t.oncomplete = function () { ok(req && req.result !== undefined ? req.result : undefined); };
+        t.onerror = t.onabort = function () { no(t.error); };
+      });
+    }
+    function all(s) { return tx(s, 'readonly', function (t) { return t.objectStore(s).getAll(); }); }
+    function get(s, id) { return tx(s, 'readonly', function (t) { return t.objectStore(s).get(id); }); }
+    function put(s, o) { return tx(s, 'readwrite', function (t) { return t.objectStore(s).put(o); }); }
+    function revsOf(id) { return tx('revs', 'readonly', function (t) { return t.objectStore('revs').index('fid').getAll(id); }); }
+    async function reload() { N = await all('nodes'); }
+    function node(id) { for (var i = 0; i < N.length; i++) if (N[i].id === id) return N[i]; return null; }
+    function kids(id, del) { return N.filter(function (n) { return n.parent === id && !!n.del === !!del; }); }
+    function path(id) { var p = []; while (id && id !== 'root') { var n = node(id); if (!n) break; p.unshift(n.name); id = n.parent; } return '/' + p.join('/'); }
+    function desc(id) { var out = [id]; kids(id, false).concat(kids(id, true)).forEach(function (k) { out = out.concat(desc(k.id)); }); return out; }
+    function uniq(parent, name, skip) {
+      var base = name, ext = '', m = name.match(/^(.*)(\.[^.]+)$/); if (m) { base = m[1]; ext = m[2]; }
+      var nm = name, i = 2;
+      while (N.some(function (n) { return n.parent === parent && !n.del && n.id !== skip && n.name.toLowerCase() === nm.toLowerCase(); })) nm = base + ' (' + (i++) + ')' + ext;
+      return nm;
+    }
+    function fixName(n) { n = (n || '').replace(/[\\\/:*?"<>|]/g, '-').trim(); return n; }
+    function htmlName(n) { return /\.[a-z0-9]{1,5}$/i.test(n) ? n : n + '.html'; }
+
+    async function snap(id, content, force) {
+      var rs = await revsOf(id);
+      if (rs.length && rs[rs.length - 1].content === content) return;
+      await put('revs', { fid: id, content: content, at: Date.now(), size: content.length });
+      rs = await revsOf(id);
+      while (rs.length > MAXREV) { var old = rs.shift(); await tx('revs', 'readwrite', function (t) { return t.objectStore('revs').delete(old.rid); }); }
+      lastSnap = Date.now();
+    }
+    async function write(n, content, withSnap) {
+      n.size = content.length; n.updated = Date.now();
+      await put('blobs', { id: n.id, content: content }); await put('nodes', n);
+      if (withSnap) await snap(n.id, content);
+    }
+    async function create(parent, name, content) {
+      var n = { id: uid(), type: 'file', name: uniq(parent, name), parent: parent, size: 0, created: Date.now(), updated: Date.now(), fav: false, del: false };
+      await write(n, content, true); N.push(n); return n;
+    }
+    function link(n) {
+      act = n ? n.id : ''; lastSaved = n ? codeArea.value : null;
+      if (n) safeSet('hp_vault_active', act); else safeRemove('hp_vault_active');
+      paintActive();
+    }
+    function paintActive() {
+      var n = act ? node(act) : null, el = $('vtActive');
+      if (n && !n.del) el.innerHTML = '🔗 Terhubung: <b>' + escapeHtml(path(n.id)) + '</b><br>Tersimpan ' + fmt(n.updated) + ' · ' + formatSize(n.size) +
+        ' · autosave ' + (safeGet('hp_vault_auto', '1') === '1' ? 'ON' : 'OFF') + ' <span class="vt-x" id="vtUnlink">Lepas</span>';
+      else { if (act && N.length) link(null); el.innerHTML = 'Belum terhubung ke file Vault.<br>Tap <b>Simpan ke Vault</b> untuk membuat file & mengaktifkan autosave.'; }
+      var b = $('vtBadge'); if (b) b.hidden = !(n && !n.del);
+      var u = $('vtUnlink'); if (u) u.onclick = function () { link(null); showToast('Tautan Vault dilepas', 'info'); render(); };
+    }
+
+    async function saveActive(silent) {
+      var n = act ? node(act) : null;
+      if (!n || n.del) return saveAs();
+      var c = codeArea.value; if (!c.trim()) { showToast('Belum ada kode untuk disimpan', 'warn'); return; }
+      await write(n, c, !silent || Date.now() - lastSnap > 300000);
+      lastSaved = c; paintActive(); render();
+      if (!silent) { showToast('Tersimpan di Vault: ' + n.name, 'success'); log('Vault: simpan "' + path(n.id) + '" (' + formatSize(n.size) + ')', 'success'); }
+    }
+    async function saveAs() {
+      var c = codeArea.value; if (!c.trim()) { showToast('Belum ada kode untuk disimpan', 'warn'); return; }
+      var nm = prompt('Simpan ke Vault di ' + path(cwd) + '\nNama file:', currentFilename || ('playground-' + makeTimestamp() + '.html'));
+      if (nm === null) return; nm = fixName(nm); if (!nm) { showToast('Nama kosong — dibatalkan', 'warn'); return; }
+      var n = await create(cwd, htmlName(nm), c);
+      currentFilename = n.name; safeSet(STORAGE_FILENAME, n.name); updateFilenameUI();
+      link(n); render(); showToast('Disimpan ke Vault: ' + n.name, 'success'); log('Vault: file baru "' + path(n.id) + '"', 'success');
+    }
+    async function openFile(id) {
+      var n = node(id); if (!n) return;
+      if (codeArea.value.trim() && codeArea.value !== lastSaved && !confirm('Editor berisi kode yang belum tersimpan di Vault.\nGanti dengan "' + n.name + '"?')) return;
+      var b = await get('blobs', id), c = b ? b.content : '';
+      codeArea.value = c; saveCode(); updateStats(); resetMatchNav(); updateMatchInfo(); resetHistory();
+      currentFilename = n.name; safeSet(STORAGE_FILENAME, n.name); updateFilenameUI();
+      link(n); lastSaved = c; switchTab('home'); showToast('Dibuka: ' + n.name, 'success'); log('Vault: buka "' + path(id) + '"', 'info');
+    }
+    async function newFolder() {
+      var nm = fixName(prompt('Nama folder baru di ' + path(cwd) + ':', '') || ''); if (!nm) return;
+      N.push({ id: uid(), type: 'folder', name: uniq(cwd, nm), parent: cwd, created: Date.now(), updated: Date.now(), del: false });
+      await put('nodes', N[N.length - 1]); render();
+    }
+    async function rename(n) {
+      var nm = fixName(prompt('Ganti nama:', n.name) || ''); if (!nm || nm === n.name) return;
+      n.name = uniq(n.parent, nm, n.id); n.updated = Date.now(); await put('nodes', n);
+      if (n.id === act) { currentFilename = n.name; safeSet(STORAGE_FILENAME, n.name); updateFilenameUI(); }
+      render(); paintActive();
+    }
+    function move(n) {
+      var bad = desc(n.id), items = [{ t: '🗄 Vault (root)', f: function () { doMove(n, 'root'); } }];
+      N.filter(function (x) { return x.type === 'folder' && !x.del && bad.indexOf(x.id) < 0; }).sort(function (a, b) { return path(a.id).localeCompare(path(b.id)); })
+        .forEach(function (x) { items.push({ t: '📁 ' + path(x.id), f: function () { doMove(n, x.id); } }); });
+      sheet('Pindahkan "' + n.name + '" ke…', items);
+    }
+    async function doMove(n, to) { n.parent = to; n.name = uniq(to, n.name, n.id); n.updated = Date.now(); await put('nodes', n); render(); paintActive(); showToast('Dipindahkan ke ' + path(to), 'success'); }
+    async function dup(n) {
+      var b = await get('blobs', n.id), c = await create(n.parent, n.name.replace(/(\.[^.]+)?$/, ' (salinan)$1'), b ? b.content : '');
+      render(); showToast('Diduplikat: ' + c.name, 'success');
+    }
+    async function trash(n, on) {
+      var ids = desc(n.id);
+      for (var i = 0; i < ids.length; i++) {
+        var x = node(ids[i]); x.del = on; x.delAt = on ? Date.now() : 0; await put('nodes', x);
+      }
+      if (!on && node(n.parent) && node(n.parent).del) { n.parent = 'root'; n.name = uniq('root', n.name, n.id); await put('nodes', n); }
+      render(); paintActive(); showToast(on ? 'Dipindah ke Sampah' : 'Dipulihkan', on ? 'info' : 'success');
+    }
+    async function purge(ids) {
+      for (var i = 0; i < ids.length; i++) {
+        var id = ids[i], rs = await revsOf(id);
+        await tx(['nodes', 'blobs', 'revs'], 'readwrite', function (t) {
+          t.objectStore('nodes').delete(id); t.objectStore('blobs').delete(id);
+          rs.forEach(function (r) { t.objectStore('revs').delete(r.rid); });
+        });
+      }
+      await reload(); render(); paintActive();
+    }
+    async function history(n) {
+      var rs = (await revsOf(n.id)).reverse();
+      if (!rs.length) { showToast('Belum ada riwayat versi', 'info'); return; }
+      sheet('Riwayat: ' + n.name, rs.map(function (r) {
+        return { t: '🕘 ' + fmt(r.at) + ' · ' + formatSize(r.size), f: function () {
+          sheet('Versi ' + fmt(r.at), [
+            { t: '↩ Pulihkan versi ini', f: async function () {
+              var cur = await get('blobs', n.id); if (cur) await snap(n.id, cur.content);
+              await write(n, r.content, false);
+              if (act === n.id) { codeArea.value = r.content; saveCode(); updateStats(); resetHistory(); lastSaved = r.content; }
+              render(); paintActive(); showToast('Versi dipulihkan', 'success');
+            } },
+            { t: '🗑 Hapus versi ini', c: 'danger', f: async function () { await tx('revs', 'readwrite', function (t) { return t.objectStore('revs').delete(r.rid); }); showToast('Versi dihapus', 'info'); } }
+          ]);
+        } };
+      }));
+    }
+    async function exportFile(n) { var b = await get('blobs', n.id); shareOrDownload(n.name, b ? b.content : '', 'text/html;charset=utf-8'); }
+    async function importFiles(files) {
+      var cnt = 0;
+      for (var i = 0; i < files.length; i++) {
+        var txt = await new Promise(function (ok, no) { var r = new FileReader(); r.onload = function () { ok(r.result); }; r.onerror = no; r.readAsText(files[i]); });
+        await create(cwd, files[i].name, txt); cnt++;
+      }
+      render(); showToast(cnt + ' file masuk ke Vault', 'success'); log('Vault: import ' + cnt + ' file ke ' + path(cwd), 'success');
+    }
+    async function backup() {
+      var bl = await all('blobs'), data = { app: 'HTML Playground Vault', version: 1, at: new Date().toISOString(), nodes: N, blobs: bl };
+      shareOrDownload('vault-backup-' + makeTimestamp() + '.json', JSON.stringify(data), 'application/json;charset=utf-8');
+    }
+    async function restore(file) {
+      try {
+        var d = JSON.parse(await new Promise(function (ok, no) { var r = new FileReader(); r.onload = function () { ok(r.result); }; r.onerror = no; r.readAsText(file); }));
+        if (!d || !Array.isArray(d.nodes) || !Array.isArray(d.blobs)) throw 0;
+        if (!confirm('Gabungkan ' + d.nodes.length + ' item dari backup ke Vault?\n(Item dengan ID sama akan ditimpa)')) return;
+        for (var i = 0; i < d.nodes.length; i++) await put('nodes', d.nodes[i]);
+        for (var j = 0; j < d.blobs.length; j++) await put('blobs', d.blobs[j]);
+        await reload(); render(); paintActive(); showToast('Backup Vault dipulihkan', 'success');
+      } catch (e) { showToast('File backup Vault tidak valid', 'error'); }
+    }
+
+    function sheet(title, items) {
+      var o = $('vtSheet'); o.querySelector('.vt-t').textContent = title;
+      var b = o.querySelector('.vt-b'); b.innerHTML = '';
+      items.forEach(function (it) {
+        var x = document.createElement('button'); x.type = 'button'; x.className = 'vt-opt ' + (it.c || ''); x.textContent = it.t;
+        x.onclick = function () { o.hidden = true; if (it.f) it.f(); }; b.appendChild(x);
+      });
+      o.hidden = false;
+    }
+    function actions(n) {
+      var it = [];
+      if (n.del) it = [{ t: '↩ Pulihkan', f: function () { trash(n, false); } }, { t: '✕ Hapus permanen', c: 'danger', f: function () { if (confirm('Hapus permanen "' + n.name + '"?')) purge(desc(n.id)); } }];
+      else {
+        if (n.type === 'file') it.push({ t: '📝 Buka di editor', f: function () { openFile(n.id); } });
+        else it.push({ t: '📂 Buka folder', f: function () { cd(n.id); } });
+        if (n.type === 'file') it.push({ t: '🕘 Riwayat versi', f: function () { history(n); } }, { t: n.fav ? '☆ Hapus dari favorit' : '★ Jadikan favorit', f: async function () { n.fav = !n.fav; await put('nodes', n); render(); } });
+        it.push({ t: '✏ Ganti nama', f: function () { rename(n); } }, { t: '📁 Pindahkan', f: function () { move(n); } });
+        if (n.type === 'file') it.push({ t: '⧉ Duplikat', f: function () { dup(n); } }, { t: '⬇ Ekspor ke file', f: function () { exportFile(n); } });
+        it.push({ t: '🗑 Pindah ke Sampah', c: 'danger', f: function () { if (n.type === 'file' || confirm('Folder "' + n.name + '" beserta isinya dipindah ke Sampah?')) trash(n, true); } });
+      }
+      sheet(n.name, it);
+    }
+    function more() {
+      var auto = safeGet('hp_vault_auto', '1') === '1';
+      sheet('Menu Vault', [
+        { t: (auto ? '⏸ Matikan' : '▶ Nyalakan') + ' autosave ke Vault', f: function () { safeSet('hp_vault_auto', auto ? '0' : '1'); paintActive(); } },
+        { t: '⬇ Backup seluruh Vault (JSON)', f: backup },
+        { t: '⬆ Restore backup Vault', f: function () { $('vtRestore').click(); } },
+        { t: '🛡 Minta penyimpanan persisten', f: async function () {
+          try { var ok = navigator.storage && await navigator.storage.persist(); showToast(ok ? 'Penyimpanan persisten aktif' : 'Browser tidak memberi izin persisten', ok ? 'success' : 'warn'); } catch (e) { showToast('Tidak didukung', 'warn'); }
+        } },
+        { t: '🧹 Kosongkan Sampah', c: 'danger', f: function () { var d = N.filter(function (n) { return n.del; }); if (!d.length) return showToast('Sampah kosong', 'info'); if (confirm('Hapus permanen ' + d.length + ' item di Sampah?')) purge(d.map(function (n) { return n.id; })); } }
+      ]);
+    }
+    function cd(id) { cwd = id; view = 'all'; q = ''; $('vtSearch').value = ''; render(); }
+
+    function render() {
+      var list;
+      if (q) list = N.filter(function (n) { return !n.del && n.name.toLowerCase().indexOf(q) >= 0; });
+      else if (view === 'fav') list = N.filter(function (n) { return n.fav && !n.del && n.type === 'file'; });
+      else if (view === 'trash') list = N.filter(function (n) { return n.del; });
+      else list = kids(cwd, false);
+      list.sort(function (a, b) { return (a.type === b.type ? 0 : a.type === 'folder' ? -1 : 1) || a.name.localeCompare(b.name, undefined, { numeric: true }); });
+      var segs = $('vtSeg').children; for (var i = 0; i < segs.length; i++) segs[i].classList.toggle('on', segs[i].getAttribute('data-v') === view);
+      var cr = $('vtCrumbs'), ids = [], x = cwd; while (x && x !== 'root' && node(x)) { ids.unshift(x); x = node(x).parent; }
+      cr.innerHTML = '<button data-id="root">🗄 Vault</button>' + ids.map(function (id) { return '<i>›</i><button data-id="' + id + '">' + escapeHtml(node(id).name) + '</button>'; }).join('');
+      cr.style.display = (view === 'all' && !q) ? '' : 'none';
+      if (!list.length) vt.innerHTML = '<div class="vt-empty">' + (q ? 'Tidak ada hasil untuk "' + escapeHtml(q) + '"' : view === 'trash' ? 'Sampah kosong' : view === 'fav' ? 'Belum ada favorit' : 'Folder kosong.<br>Simpan kode, buat folder, atau import file.') + '</div>';
+      else vt.innerHTML = list.map(function (n) {
+        var meta = n.type === 'folder' ? kids(n.id, false).length + ' item' : formatSize(n.size || 0) + ' · ' + fmt(n.updated);
+        if (q || view !== 'all') meta = path(n.parent) + ' · ' + meta;
+        return '<div class="vt-row' + (n.id === act ? ' cur' : '') + '" data-id="' + n.id + '"><span class="vt-ic">' + (n.type === 'folder' ? '📁' : (n.fav ? '⭐' : '📄')) + '</span>' +
+          '<span class="vt-nm"><span>' + escapeHtml(n.name) + '</span><small>' + escapeHtml(meta) + '</small></span><button class="vt-dots" data-m="1" type="button" aria-label="Menu">⋮</button></div>';
+      }).join('');
+      var nf = N.filter(function (n) { return n.type === 'file' && !n.del; });
+      var st = nf.length + ' file · ' + N.filter(function (n) { return n.type === 'folder' && !n.del; }).length + ' folder · ' + formatSize(nf.reduce(function (s, n) { return s + (n.size || 0); }, 0));
+      $('vtStat').textContent = st;
+      try { navigator.storage.estimate().then(function (e) { $('vtStat').textContent = st + ' · browser: ' + formatSize(e.usage || 0) + ' / ' + formatSize(e.quota || 0); }); } catch (e) {}
+    }
+
+    vt.addEventListener('click', function (e) {
+      var row = e.target.closest('.vt-row'); if (!row) return;
+      var n = node(row.getAttribute('data-id')); if (!n) return;
+      if (e.target.closest('[data-m]') || n.del) return actions(n);
+      if (n.type === 'folder') cd(n.id); else openFile(n.id);
+    });
+    $('vtCrumbs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) cd(b.getAttribute('data-id')); });
+    $('vtSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { view = b.getAttribute('data-v'); q = ''; $('vtSearch').value = ''; render(); } });
+    $('vtSearch').addEventListener('input', function () { q = this.value.trim().toLowerCase(); render(); });
+    $('vtSave').addEventListener('click', function () { saveActive(false); });
+    $('vtSaveAs').addEventListener('click', saveAs);
+    $('vtNewFolder').addEventListener('click', newFolder);
+    $('vtImport').addEventListener('click', function () { $('vtFile').click(); });
+    $('vtMore').addEventListener('click', more);
+    $('vtFile').addEventListener('change', function (e) { if (e.target.files.length) importFiles(e.target.files); e.target.value = ''; });
+    $('vtRestore').addEventListener('change', function (e) { if (e.target.files[0]) restore(e.target.files[0]); e.target.value = ''; });
+    $('vtSheet').querySelector('.vt-bd').addEventListener('click', function () { $('vtSheet').hidden = true; });
+
+    var quick = $('vtQuick'); if (quick) quick.addEventListener('click', function () { if (!DB) return showToast('Vault belum siap', 'warn'); saveActive(false); });
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 's') { e.preventDefault(); if (DB) saveActive(false); }
+    });
+    var fi = $('clearFileBtn'); var bd = document.createElement('span'); bd.id = 'vtBadge'; bd.hidden = true; bd.textContent = '🗄 Vault'; bd.style.cssText = 'font-size:11px;opacity:.85;flex-shrink:0';
+    if (fi && fi.parentNode) fi.parentNode.insertBefore(bd, fi);
+
+    /* Autosave: pantau perubahan (juga dari Batch/Replace/Studio yang tidak memicu event input) */
+    setInterval(async function () {
+      if (!DB || busy || !act || safeGet('hp_vault_auto', '1') !== '1') return;
+      var n = node(act); if (!n || n.del || lastSaved === null || codeArea.value === lastSaved || !codeArea.value.trim()) return;
+      busy = true; try { await saveActive(true); } catch (e) {} busy = false;
+    }, 3000);
+    document.addEventListener('visibilitychange', function () { if (document.hidden && DB && act && safeGet('hp_vault_auto', '1') === '1' && lastSaved !== null && codeArea.value !== lastSaved && codeArea.value.trim()) saveActive(true); });
+
+    open().then(reload).then(function () {
+      if (act && node(act)) { get('blobs', act).then(function (b) { lastSaved = b ? b.content : null; }); }
+      render(); paintActive(); log('Vault siap (' + N.filter(function (n) { return !n.del; }).length + ' item)', 'info');
+    }).catch(function (e) {
+      vt.innerHTML = '<div class="vt-empty">⚠️ Vault tidak bisa dibuka:<br>' + escapeHtml((e && e.message) || e) + '</div>';
+      showToast('Vault tidak tersedia', 'error');
+    });
+  })();
 
 })();
 </script>
